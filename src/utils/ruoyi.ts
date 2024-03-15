@@ -106,19 +106,19 @@ export function selectDictLabels(datas: {
   if (Array.isArray(value)) {
     value = value.join(",");
   }
-  let actions: never[] = [];
+  let actions: string[] = [];
   let currentSeparator = undefined === separator ? "," : separator;
   let temp = value.split(currentSeparator);
   Object.keys(value.split(currentSeparator)).some((val) => {
     let match = false;
     Object.keys(datas).some((key) => {
-      if (datas[key].value == ('' + temp[val])) {
+      if (datas[key].value == ('' + val)) {
         actions.push(datas[key].label + currentSeparator);
         match = true;
       }
     })
     if (!match) {
-      actions.push(temp[val] + currentSeparator);
+      actions.push(val + currentSeparator);
     }
   })
   return actions.join('').substring(0, actions.join('').length - 1);
