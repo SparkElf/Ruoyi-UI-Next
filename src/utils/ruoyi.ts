@@ -36,9 +36,9 @@ export function parseTime(time: string | number | Date, pattern: string) {
     s: date.getSeconds(),
     a: date.getDay()
   }
-  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result: string | any[], key: string) => {
+  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result: string, key: string) => {
     let value = formatObj[key as keyof typeof formatObj]
-    let str=value.toString()
+    let str = value.toString()
     // Note: getDay() returns 0 on Sunday
     if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     if (result.length > 0 && value < 10) {
@@ -50,7 +50,7 @@ export function parseTime(time: string | number | Date, pattern: string) {
 }
 
 // 表单重置
-export function resetForm(refName: string | number) {
+export function resetForm(this: any, refName: string | number) {
   if (this.$refs[refName]) {
     this.$refs[refName].resetFields();
   }
@@ -72,7 +72,11 @@ export function addDateRange(params: any, dateRange: any[], propName: string) {
 }
 
 // 回显数据字典
-export function selectDictLabel(datas: { [x: string]: { label: any } }, value: string | undefined) {
+export function selectDictLabel(datas: {
+  [x: string]: {
+    value: string, label: any
+  }
+}, value: string | undefined) {
   if (value === undefined) {
     return "";
   }
@@ -90,8 +94,12 @@ export function selectDictLabel(datas: { [x: string]: { label: any } }, value: s
 }
 
 // 回显数据字典（字符串数组）
-export function selectDictLabels(datas: { [x: string]: { label: any } }, value: string | undefined, separator: undefined) {
-  if (value === undefined || value.length ===0) {
+export function selectDictLabels(datas: {
+  [x: string]: {
+    value: string label: any
+  }
+}, value: string | undefined, separator: undefined) {
+  if (value === undefined || value.length === 0) {
     return "";
   }
   if (Array.isArray(value)) {
