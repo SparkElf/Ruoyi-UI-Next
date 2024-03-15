@@ -1,11 +1,11 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","vite.config.ts,vitest.config.ts"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","vite.config.ts,vitest.config.ts","auto-imports.d.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "types": ["vite-plugin-svg-icons/client"],
+    "types": ["vite-plugin-svg-icons"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
