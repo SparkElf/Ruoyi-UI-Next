@@ -1,12 +1,15 @@
+import type { DictItem } from "@/types/ruoyi";
+
+//TODO 这样设置字典岂不是有重复?
 const useDictStore = defineStore(
   'dict',
   {
     state: () => ({
-      dict: new Array()
+      dict: [] as {key:string,value:DictItem[]}[]
     }),
     actions: {
       // 获取字典
-      getDict(_key) {
+      getDict(_key: string | null) {
         if (_key == null && _key == "") {
           return null;
         }
@@ -21,7 +24,7 @@ const useDictStore = defineStore(
         }
       },
       // 设置字典
-      setDict(_key, value) {
+      setDict(_key: string, value: DictItem[]) {
         if (_key !== null && _key !== "") {
           this.dict.push({
             key: _key,
@@ -30,7 +33,7 @@ const useDictStore = defineStore(
         }
       },
       // 删除字典
-      removeDict(_key) {
+      removeDict(_key: undefined) {
         var bln = false;
         try {
           for (let i = 0; i < this.dict.length; i++) {
@@ -46,7 +49,7 @@ const useDictStore = defineStore(
       },
       // 清空字典
       cleanDict() {
-        this.dict = new Array();
+        this.dict = [];
       },
       // 初始字典
       initDict() {

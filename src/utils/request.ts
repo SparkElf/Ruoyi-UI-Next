@@ -1,19 +1,21 @@
-import axios from 'axios'
-import { ElNotification , ElMessageBox, ElMessage, ElLoading } from 'element-plus'
+import axios, { type AxiosRequestConfig } from 'axios'
+import { ElNotification , ElMessageBox, ElMessage, ElLoading, type LoadingParentElement } from 'element-plus'
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
 import { tansParams, blobValidate } from '@/utils/ruoyi'
 import cache from '@/plugins/cache'
 import { saveAs } from 'file-saver'
 import useUserStore from '@/store/modules/user'
+import type { ComponentOptionsBase } from 'vue'
+import type { PageResponse, SingleResponse } from '@/types/ruoyi'
 
-let downloadLoadingInstance;
+let downloadLoadingInstance: { close: any; setText?: (text: string) => void; removeElLoadingChild?: () => void; handleAfterLeave?: () => void; vm?: globalThis.ComponentPublicInstance<{}, {}, {}, {}, {}, {}, {}, {}, false, ComponentOptionsBase<any, any, any, any, any, any, any, any, any, {}, {}, string, {}>, {}, {}>; $el?: HTMLElement; originalPosition?: globalThis.Ref<string>; originalOverflow?: globalThis.Ref<string>; visible?: globalThis.Ref<boolean>; parent?: globalThis.Ref<LoadingParentElement>; background?: globalThis.Ref<string>; svg?: globalThis.Ref<string>; svgViewBox?: globalThis.Ref<string>; spinner?: globalThis.Ref<string | boolean>; text?: globalThis.Ref<string>; fullscreen?: globalThis.Ref<boolean>; lock?: globalThis.Ref<boolean>; customClass?: globalThis.Ref<string>; target?: globalThis.Ref<HTMLElement>; beforeClose?: globalThis.Ref<(() => boolean) | undefined> | undefined; closed?: globalThis.Ref<(() => void) | undefined> | undefined };
 // 是否显示重新登录
 export let isRelogin = { show: false };
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
-const service = axios.create({
+export const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
   baseURL: import.meta.env.VITE_APP_BASE_API,
   // 超时
@@ -123,7 +125,7 @@ service.interceptors.response.use(res => {
 )
 
 // 通用下载方法
-export function download(url, params, filename, config) {
+export function download(url: string, params: any, filename: string | undefined, config: AxiosRequestConfig<any> | undefined) {
   downloadLoadingInstance = ElLoading.service({ text: "正在下载数据，请稍候", background: "rgba(0, 0, 0, 0.7)", })
   return service.post(url, params, {
     transformRequest: [(params) => { return tansParams(params) }],
@@ -131,12 +133,15 @@ export function download(url, params, filename, config) {
     responseType: 'blob',
     ...config
   }).then(async (data) => {
+    //TODO 返回的类型经过拦截器修改不正确
     const isBlob = blobValidate(data);
     if (isBlob) {
-      const blob = new Blob([data])
+      const blob = new Blob([data as any])
       saveAs(blob, filename)
     } else {
-      const resText = await data.text();
+      //TODO text方法不存在?
+
+      const resText = await (data as any).text();
       const rspObj = JSON.parse(resText);
       const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default']
       ElMessage.error(errMsg);
@@ -149,4 +154,8 @@ export function download(url, params, filename, config) {
   })
 }
 
-export default service
+
+function request<Type extends 'single'|'list'='single'|'list',ResponseData=any>(config:AxiosRequestConfig){
+  return service<any,Type extends 'single'?SingleResponse<ResponseData>:PageResponse<ResponseData>,any>(config)
+}
+export default request
