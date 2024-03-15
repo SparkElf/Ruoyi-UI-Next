@@ -5,8 +5,10 @@
  * Copyright (c) 2019 ruoyi
  */
 
-// 日期格式化
-export function parseTime(time, pattern) {
+import type { AxiosResponse } from "axios"
+
+// 日期格式化 毫秒串格式化 1710481514960
+export function parseTime(time: string | number | Date, pattern: string) {
   if (arguments.length === 0 || !time) {
     return null
   }
@@ -34,27 +36,28 @@ export function parseTime(time, pattern) {
     s: date.getSeconds(),
     a: date.getDay()
   }
-  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
-    let value = formatObj[key]
+  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result: string | any[], key: string) => {
+    let value = formatObj[key as keyof typeof formatObj]
+    let str=value.toString()
     // Note: getDay() returns 0 on Sunday
     if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     if (result.length > 0 && value < 10) {
-      value = '0' + value
+      str = '0' + value
     }
-    return value || 0
+    return str || '0'
   })
   return time_str
 }
 
 // 表单重置
-export function resetForm(refName) {
+export function resetForm(refName: string | number) {
   if (this.$refs[refName]) {
     this.$refs[refName].resetFields();
   }
 }
 
 // 添加日期范围
-export function addDateRange(params, dateRange, propName) {
+export function addDateRange(params: any, dateRange: any[], propName: string) {
   let search = params;
   search.params = typeof (search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {};
   dateRange = Array.isArray(dateRange) ? dateRange : [];
@@ -69,7 +72,7 @@ export function addDateRange(params, dateRange, propName) {
 }
 
 // 回显数据字典
-export function selectDictLabel(datas, value) {
+export function selectDictLabel(datas: { [x: string]: { label: any } }, value: string | undefined) {
   if (value === undefined) {
     return "";
   }
@@ -87,14 +90,14 @@ export function selectDictLabel(datas, value) {
 }
 
 // 回显数据字典（字符串数组）
-export function selectDictLabels(datas, value, separator) {
+export function selectDictLabels(datas: { [x: string]: { label: any } }, value: string | undefined, separator: undefined) {
   if (value === undefined || value.length ===0) {
     return "";
   }
   if (Array.isArray(value)) {
     value = value.join(",");
   }
-  var actions = [];
+  var actions: never[] = [];
   var currentSeparator = undefined === separator ? "," : separator;
   var temp = value.split(currentSeparator);
   Object.keys(value.split(currentSeparator)).some((val) => {
@@ -113,7 +116,7 @@ export function selectDictLabels(datas, value, separator) {
 }
 
 // 字符串格式化(%s )
-export function sprintf(str) {
+export function sprintf(str: string) {
   var args = arguments, flag = true, i = 1;
   str = str.replace(/%s/g, function () {
     var arg = args[i++];
@@ -127,7 +130,7 @@ export function sprintf(str) {
 }
 
 // 转换字符串，undefined,null等转化为""
-export function parseStrEmpty(str) {
+export function parseStrEmpty(str: string) {
   if (!str || str == "undefined" || str == "null") {
     return "";
   }
@@ -135,7 +138,7 @@ export function parseStrEmpty(str) {
 }
 
 // 数据合并
-export function mergeRecursive(source, target) {
+export function mergeRecursive(source: { [x: string]: any }, target: { [x: string]: any }) {
   for (var p in target) {
     try {
       if (target[p].constructor == Object) {
@@ -157,7 +160,7 @@ export function mergeRecursive(source, target) {
  * @param {*} parentId 父节点字段 默认 'parentId'
  * @param {*} children 孩子节点字段 默认 'children'
  */
-export function handleTree(data, id, parentId, children) {
+export function handleTree(data: any, id: any, parentId: any, children: any) {
   let config = {
     id: id || 'id',
     parentId: parentId || 'parentId',
@@ -188,7 +191,7 @@ export function handleTree(data, id, parentId, children) {
     adaptToChildrenList(t);
   }
 
-  function adaptToChildrenList(o) {
+  function adaptToChildrenList(o: { [x: string]: any }) {
     if (childrenListMap[o[config.id]] !== null) {
       o[config.childrenList] = childrenListMap[o[config.id]];
     }
@@ -205,7 +208,7 @@ export function handleTree(data, id, parentId, children) {
 * 参数处理
 * @param {*} params  参数
 */
-export function tansParams(params) {
+export function tansParams(params: { [x: string]: any }) {
   let result = ''
   for (const propName of Object.keys(params)) {
     const value = params[propName];
@@ -229,7 +232,7 @@ export function tansParams(params) {
 
 
 // 返回项目路径
-export function getNormalPath(p) {
+export function getNormalPath(p: string) {
   if (p.length === 0 || !p || p == 'undefined') {
     return p
   };
@@ -241,6 +244,6 @@ export function getNormalPath(p) {
 }
 
 // 验证是否为blob格式
-export function blobValidate(data) {
+export function blobValidate(data: Blob) {
   return data.type !== 'application/json'
 }

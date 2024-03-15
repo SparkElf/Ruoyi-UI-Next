@@ -127,19 +127,18 @@ service.interceptors.response.use(res => {
 // 通用下载方法
 export function download(url: string, params: any, filename: string | undefined, config: AxiosRequestConfig<any> | undefined) {
   downloadLoadingInstance = ElLoading.service({ text: "正在下载数据，请稍候", background: "rgba(0, 0, 0, 0.7)", })
-  return service.post(url, params, {
+  return service.post<any,Blob>(url, params, {
     transformRequest: [(params) => { return tansParams(params) }],
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     responseType: 'blob',
     ...config
   }).then(async (data) => {
-    //TODO 返回的类型经过拦截器修改不正确
+    //Note 设置返回类型为blob后则data为Blob
     const isBlob = blobValidate(data);
     if (isBlob) {
       const blob = new Blob([data as any])
       saveAs(blob, filename)
     } else {
-      //TODO text方法不存在?
 
       const resText = await (data as any).text();
       const rspObj = JSON.parse(resText);
