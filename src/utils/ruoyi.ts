@@ -176,8 +176,8 @@ export function handleTree(data: any, id: any, parentId: any, children: any) {
     childrenList: children || 'children'
   };
 
-  let childrenListMap = {};
-  let nodeIds = {};
+  let childrenListMap = {} as { [key: string]: any };
+  let nodeIds = {} as { [key: string]: any };
   let tree = [];
 
   for (let d of data) {
