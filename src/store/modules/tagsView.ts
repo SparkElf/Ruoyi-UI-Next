@@ -37,7 +37,7 @@ const useTagsViewStore = defineStore(
         }
       },
       delView(view: Route) {
-        return new Promise(resolve => {
+        return new Promise<{visitedViews:Route[],cachedViews:string[]}>(resolve => {
           this.delVisitedView(view)
           this.delCachedView(view)
           resolve({
@@ -101,17 +101,17 @@ const useTagsViewStore = defineStore(
           resolve([...this.cachedViews])
         })
       },
-      delAllViews(view: Route) {
+      delAllViews() {
         return new Promise(resolve => {
-          this.delAllVisitedViews(view)
-          this.delAllCachedViews(view)
+          this.delAllVisitedViews()
+          this.delAllCachedViews()
           resolve({
             visitedViews: [...this.visitedViews],
             cachedViews: [...this.cachedViews]
           })
         })
       },
-      delAllVisitedViews(view: Route) {
+      delAllVisitedViews() {
         return new Promise(resolve => {
           const affixTags = this.visitedViews.filter(tag => tag.meta?.affix)
           this.visitedViews = affixTags
@@ -119,7 +119,7 @@ const useTagsViewStore = defineStore(
           resolve([...this.visitedViews])
         })
       },
-      delAllCachedViews(view: Route) {
+      delAllCachedViews() {
         return new Promise(resolve => {
           this.cachedViews = []
           resolve([...this.cachedViews])

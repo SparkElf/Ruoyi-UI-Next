@@ -41,6 +41,8 @@ export type Route =Merge< RouteRecordRaw , {
     query: any     // 访问路由的默认传递参数
     roles: string[]           // 访问路由的角色权限
     permissions: string[]      // 访问路由的菜单权限
+
+    fullPath?:string //如果已经载入就会有
 }>&{
     children?:Route[]
     name:string
