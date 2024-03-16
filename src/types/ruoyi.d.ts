@@ -17,13 +17,13 @@ export type PageResponse<T> = {
     msg?: string
     code: number
 }
-export type Route =Omit<Merge< RouteRecordRaw , {
+export type Route =Merge< RouteRecordRaw , {
     // 当设置 true 的时候该路由不会在侧边栏出现 如401，login等页面，或者如一些编辑页面/edit/1
     hidden: true // (默认 false)
 
     //当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
-    redirect: 'noRedirect'
-    component:string
+    redirect: string
+    component: string
 
     // 当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
     // 只有一个时，会将那个子路由当做根路由显示在侧边栏--如引导页面
@@ -31,11 +31,12 @@ export type Route =Omit<Merge< RouteRecordRaw , {
     // 你可以设置 alwaysShow: true，这样它就会忽略之前定义的规则，一直显示根路由
     alwaysShow: true
 
-    name: 'router-name' // 设定路由的名字，一定要填写不然使用<keep-alive>时会出现各种问题
-    query: '{"id": 1, "name": "ry"}'     // 访问路由的默认传递参数
-    roles: ['admin', 'common']           // 访问路由的角色权限
-    permissions: ['a:a:a', 'b:b:b']      // 访问路由的菜单权限
-}>,'children'>&{
+    name: string // 设定路由的名字，一定要填写不然使用<keep-alive>时会出现各种问题
+    query: any     // 访问路由的默认传递参数
+    roles: string[]           // 访问路由的角色权限
+    permissions: string[]      // 访问路由的菜单权限
+}>&{
     children?:Route[]
+    name:string
 }
 
