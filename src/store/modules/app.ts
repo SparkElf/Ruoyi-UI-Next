@@ -5,7 +5,7 @@ const useAppStore = defineStore(
   {
     state: () => ({
       sidebar: {
-        opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
+        opened: Cookies.get('sidebarStatus') ? Boolean(Cookies.get('sidebarStatus')) : true,
         withoutAnimation: false,
         hide: false
       },
@@ -13,31 +13,31 @@ const useAppStore = defineStore(
       size: Cookies.get('size') || 'default'
     }),
     actions: {
-      toggleSideBar(withoutAnimation) {
+      toggleSideBar(withoutAnimation: boolean) {
         if (this.sidebar.hide) {
           return false;
         }
         this.sidebar.opened = !this.sidebar.opened
         this.sidebar.withoutAnimation = withoutAnimation
         if (this.sidebar.opened) {
-          Cookies.set('sidebarStatus', 1)
+          Cookies.set('sidebarStatus', 'true')
         } else {
-          Cookies.set('sidebarStatus', 0)
+          Cookies.set('sidebarStatus', 'false')
         }
       },
-      closeSideBar({ withoutAnimation }) {
-        Cookies.set('sidebarStatus', 0)
+      closeSideBar({ withoutAnimation }:{withoutAnimation:boolean}) {
+        Cookies.set('sidebarStatus', 'false')
         this.sidebar.opened = false
         this.sidebar.withoutAnimation = withoutAnimation
       },
-      toggleDevice(device) {
+      toggleDevice(device: string) {
         this.device = device
       },
-      setSize(size) {
+      setSize(size: string) {
         this.size = size;
         Cookies.set('size', size)
       },
-      toggleSideBarHide(status) {
+      toggleSideBarHide(status: boolean) {
         this.sidebar.hide = status
       }
     }
