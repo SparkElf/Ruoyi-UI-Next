@@ -3,7 +3,7 @@ import { useDynamicTitle } from '@/utils/dynamicTitle'
 
 const { sideTheme, showSettings, topNav, tagsView, fixedHeader, sidebarLogo, dynamicTitle } = defaultSettings
 
-const storageSetting = JSON.parse(localStorage.getItem('layout-setting')) || ''
+const storageSetting = JSON.parse(localStorage.getItem('layout-setting')|| '{}')
 
 const useSettingsStore = defineStore(
   'settings',
@@ -21,14 +21,14 @@ const useSettingsStore = defineStore(
     }),
     actions: {
       // 修改布局设置
-      changeSetting(data) {
+      changeSetting(data: { key: string; value: any }) {
         const { key, value } = data
         if (this.hasOwnProperty(key)) {
-          this[key] = value
+          (this as any)[key] = value
         }
       },
       // 设置网页标题
-      setTitle(title) {
+      setTitle(title: string) {
         this.title = title
         useDynamicTitle();
       }
