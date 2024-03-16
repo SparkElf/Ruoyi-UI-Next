@@ -1,14 +1,14 @@
 import request from '@/utils/request'
 
 // 登录方法
-export function login(username, password, code, uuid) {
+export function login(username: string, password: string, code: string, uuid: string) {
   const data = {
     username,
     password,
     code,
     uuid
   }
-  return request({
+  return request<'ajax',{token:string}>({
     url: '/login',
     headers: {
       isToken: false,
@@ -20,7 +20,7 @@ export function login(username, password, code, uuid) {
 }
 
 // 注册方法
-export function register(data) {
+export function register(data: { username: string; password: string; confirmPassword: string; code: string; uuid: string }) {
   return request({
     url: '/register',
     headers: {

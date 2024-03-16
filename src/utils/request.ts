@@ -7,7 +7,7 @@ import cache from '@/plugins/cache'
 import { saveAs } from 'file-saver'
 import useUserStore from '@/store/modules/user'
 import type { ComponentOptionsBase } from 'vue'
-import type { PageResponse, SingleResponse } from '@/types/ruoyi'
+import type { AjaxResponse, PageResponse, SingleResponse } from '@/types/ruoyi'
 
 let downloadLoadingInstance: { close: any; setText?: (text: string) => void; removeElLoadingChild?: () => void; handleAfterLeave?: () => void; vm?: globalThis.ComponentPublicInstance<{}, {}, {}, {}, {}, {}, {}, {}, false, ComponentOptionsBase<any, any, any, any, any, any, any, any, any, {}, {}, string, {}>, {}, {}>; $el?: HTMLElement; originalPosition?: globalThis.Ref<string>; originalOverflow?: globalThis.Ref<string>; visible?: globalThis.Ref<boolean>; parent?: globalThis.Ref<LoadingParentElement>; background?: globalThis.Ref<string>; svg?: globalThis.Ref<string>; svgViewBox?: globalThis.Ref<string>; spinner?: globalThis.Ref<string | boolean>; text?: globalThis.Ref<string>; fullscreen?: globalThis.Ref<boolean>; lock?: globalThis.Ref<boolean>; customClass?: globalThis.Ref<string>; target?: globalThis.Ref<HTMLElement>; beforeClose?: globalThis.Ref<(() => boolean) | undefined> | undefined; closed?: globalThis.Ref<(() => void) | undefined> | undefined };
 // 是否显示重新登录
@@ -78,7 +78,7 @@ service.interceptors.response.use(res => {
     // 未设置状态码则默认成功状态
     const code = res.data.code || 200;
     // 获取错误信息
-    const msg = errorCode[code] || res.data.msg || errorCode['default']
+    const msg = errorCode[code as keyof typeof errorCode] || res.data.msg || errorCode['default']
     // 二进制数据则直接返回
     if (res.request.responseType ===  'blob' || res.request.responseType ===  'arraybuffer') {
       return res.data
@@ -142,7 +142,7 @@ export function download(url: string, params: any, filename: string | undefined,
 
       const resText = await (data as any).text();
       const rspObj = JSON.parse(resText);
-      const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default']
+      const errMsg = errorCode[rspObj.code as keyof typeof errorCode] || rspObj.msg || errorCode['default']
       ElMessage.error(errMsg);
     }
     downloadLoadingInstance.close();
@@ -154,7 +154,7 @@ export function download(url: string, params: any, filename: string | undefined,
 }
 
 
-function request<Type extends 'single'|'list'='single'|'list',ResponseData=any>(config:AxiosRequestConfig){
-  return service<any,Type extends 'single'?SingleResponse<ResponseData>:PageResponse<ResponseData>,any>(config)
+function request<Type extends 'single'|'list'|'ajax',ResponseData=any>(config:AxiosRequestConfig){
+  return service<any,Type extends 'single'?SingleResponse<ResponseData>: Type extends 'list'?PageResponse<ResponseData>:AjaxResponse<ResponseData>,any>(config)
 }
 export default request

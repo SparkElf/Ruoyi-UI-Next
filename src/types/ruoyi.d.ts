@@ -6,6 +6,12 @@ export type DictItem = {
     elTagType?: string
     elTagClass?: string
 }
+export type AjaxResponse<T> ={
+    msg?: string
+    code: number
+}&T
+
+
 export type SingleResponse<T> = {
     msg?: string
     code: number

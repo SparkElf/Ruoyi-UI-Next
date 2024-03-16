@@ -10,22 +10,22 @@ const useUserStore = defineStore(
       id: '',
       name: '',
       avatar: '',
-      roles: [],
-      permissions: []
+      roles: [] as string[],
+      permissions: [] as string[]
     }),
     actions: {
       // 登录
-      login(userInfo) {
+      login(userInfo: { username: string; password: string; rememberMe: boolean; code: string; uuid: string }) {
         const username = userInfo.username.trim()
         const password = userInfo.password
         const code = userInfo.code
         const uuid = userInfo.uuid
         return new Promise((resolve, reject) => {
-          login(username, password, code, uuid).then(res => {
+          login(username, password, code, uuid).then((res) => {
             setToken(res.token)
             this.token = res.token
-            resolve()
-          }).catch(error => {
+            resolve(void 0)
+          }).catch((error: any) => {
             reject(error)
           })
         })
@@ -33,7 +33,7 @@ const useUserStore = defineStore(
       // 获取用户信息
       getInfo() {
         return new Promise((resolve, reject) => {
-          getInfo().then(res => {
+          getInfo().then((res) => {
             const user = res.user
             const avatar = (user.avatar == "" || user.avatar == null) ? defAva : import.meta.env.VITE_APP_BASE_API + user.avatar;
 
@@ -47,7 +47,7 @@ const useUserStore = defineStore(
             this.name = user.userName
             this.avatar = avatar
             resolve(res)
-          }).catch(error => {
+          }).catch((error: any) => {
             reject(error)
           })
         })
@@ -55,13 +55,13 @@ const useUserStore = defineStore(
       // 退出系统
       logOut() {
         return new Promise((resolve, reject) => {
-          logout(this.token).then(() => {
+          logout().then(() => {
             this.token = ''
             this.roles = []
             this.permissions = []
             removeToken()
-            resolve()
-          }).catch(error => {
+            resolve(void 0)
+          }).catch((error: any) => {
             reject(error)
           })
         })
