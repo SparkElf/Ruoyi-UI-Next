@@ -65,7 +65,7 @@ export function formatTime(time: number, option: string) {
 export function getQueryObject(url: string | null) {
   url = url == null ? window.location.href : url
   const search = url.substring(url.lastIndexOf('?') + 1)
-  const obj = {}
+  const obj = {} as Record<string,any>
   const reg = /([^?&=]+)=([^?&=]*)/g
   search.replace(reg, (rs: any, $1: string, $2: string) => {
     const name = decodeURIComponent($1)
@@ -130,7 +130,7 @@ export function param2Obj(url: string) {
   if (!search) {
     return {}
   }
-  const obj = {}
+  const obj = {} as Record<string,any>
   const searchArr = search.split('&')
   searchArr.forEach(v => {
     const index = v.indexOf('=')
@@ -159,7 +159,7 @@ export function html2Text(val: string) {
  * @param {(Object|Array)} source
  * @returns {Object}
  */
-export function objectMerge(target: { [x: string]: any; }, source: string | any[]) {
+export function objectMerge(target: { [x: string]: any; }, source: any) {
   if (typeof target !== 'object') {
     target = {}
   }
@@ -215,8 +215,8 @@ export function getTime(type: string) {
  * @param {boolean} immediate
  * @return {*}
  */
-export function debounce(func: { apply: (arg0: any, arg1: any[]) => any; }, wait: number | undefined, immediate: any) {
-  let timeout: NodeJS.Timeout | null, args: null, context: null, timestamp: number, result: any
+export function debounce(func: { apply: (arg0: any, arg1: any[]) => any; }, wait: number , immediate: any) {
+  let timeout: NodeJS.Timeout | null, args: any, context: null, timestamp: number, result: any
 
   const later = function() {
     // 据上一次触发时间间隔
@@ -235,7 +235,7 @@ export function debounce(func: { apply: (arg0: any, arg1: any[]) => any; }, wait
     }
   }
 
-  return function(...args: null) {
+  return function(this:any,...args: any) {
     context = this
     timestamp = +new Date()
     const callNow = immediate && !timeout
@@ -259,14 +259,14 @@ export function debounce(func: { apply: (arg0: any, arg1: any[]) => any; }, wait
  */
 export function deepClone(source: { [x: string]: any; constructor?: any; }) {
   if (!source && typeof source !== 'object') {
-    throw new Error('error arguments', 'deepClone')
+    throw new Error('deepClone:error arguments')
   }
-  const targetObj = source.constructor === Array ? [] : {}
+  const targetObj = source.constructor === Array ? [] : {} as Record<string,any>
   Object.keys(source).forEach(keys => {
     if (source[keys] && typeof source[keys] === 'object') {
-      targetObj[keys] = deepClone(source[keys])
+      (targetObj as any)[keys] = deepClone(source[keys])
     } else {
-      targetObj[keys] = source[keys]
+      (targetObj as any)[keys] = source[keys]
     }
   })
   return targetObj
@@ -285,7 +285,7 @@ export function uniqueArr(arr: Iterable<unknown> | null | undefined) {
  */
 export function createUniqueString() {
   const timestamp = +new Date() + ''
-  const randomNum = parseInt((1 + Math.random()) * 65536) + ''
+  const randomNum = (1 + Math.random()) * 65536 + ''
   return (+(randomNum + timestamp)).toString(32)
 }
 
