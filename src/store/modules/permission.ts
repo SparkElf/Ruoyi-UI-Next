@@ -2,8 +2,9 @@ import auth from '@/plugins/auth'
 import router, { constantRoutes, dynamicRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
-import ParentView from '@/components/ParentView'
-import InnerLink from '@/layout/components/InnerLink'
+import ParentView from '@/components/ParentView/index.vue'
+import InnerLink from '@/layout/components/InnerLink/index.vue'
+import type { Route } from '@/types/ruoyi'
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue')
@@ -12,35 +13,35 @@ const usePermissionStore = defineStore(
   'permission',
   {
     state: () => ({
-      routes: [],
-      addRoutes: [],
-      defaultRoutes: [],
-      topbarRouters: [],
-      sidebarRouters: []
+      routes: [] as Route[],
+      addRoutes: [] as Route[],
+      defaultRoutes: [] as Route[],
+      topbarRouters: [] as Route[],
+      sidebarRouters: [] as Route[]
     }),
     actions: {
-      setRoutes(routes) {
+      setRoutes(routes: Route[]) {
         this.addRoutes = routes
         this.routes = constantRoutes.concat(routes)
       },
-      setDefaultRoutes(routes) {
+      setDefaultRoutes(routes: Route[]) {
         this.defaultRoutes = constantRoutes.concat(routes)
       },
-      setTopbarRoutes(routes) {
+      setTopbarRoutes(routes: Route[]) {
         this.topbarRouters = routes
       },
-      setSidebarRouters(routes) {
+      setSidebarRouters(routes: Route[]) {
         this.sidebarRouters = routes
       },
-      generateRoutes(roles) {
+      generateRoutes(roles: string[]) {
         return new Promise(resolve => {
           // 向后端请求路由数据
-          getRouters().then(res => {
+          getRouters().then((res: { data: any }) => {
             const sdata = JSON.parse(JSON.stringify(res.data))
             const rdata = JSON.parse(JSON.stringify(res.data))
             const defaultData = JSON.parse(JSON.stringify(res.data))
             const sidebarRoutes = filterAsyncRouter(sdata)
-            const rewriteRoutes = filterAsyncRouter(rdata, false, true)
+            const rewriteRoutes = filterAsyncRouter(rdata, undefined, true)
             const defaultRoutes = filterAsyncRouter(defaultData)
             const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
             asyncRoutes.forEach(route => { router.addRoute(route) })
@@ -56,8 +57,8 @@ const usePermissionStore = defineStore(
   })
 
 // 遍历后台传来的路由字符串，转换为组件对象
-function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
-  return asyncRouterMap.filter(route => {
+function filterAsyncRouter(asyncRouterMap: any[], lastRouter?:Route, type = false) {
+  return asyncRouterMap.filter((route: Route) => {
     if (type && route.children) {
       route.children = filterChildren(route.children)
     }
@@ -70,7 +71,7 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
       } else if (route.component === 'InnerLink') {
         route.component = InnerLink
       } else {
-        route.component = loadView(route.component)
+        route.component = loadView(route.component as string)
       }
     }
     if (route.children != null && route.children && route.children.length) {
@@ -83,12 +84,12 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
   })
 }
 
-function filterChildren(childrenMap, lastRouter = false) {
-  var children = []
-  childrenMap.forEach((el, index) => {
+function filterChildren(childrenMap:Route[], lastRouter?:Route) {
+  var children: any[] = []
+  childrenMap.forEach((el: Route, index: any) => {
     if (el.children && el.children.length) {
       if (el.component === 'ParentView' && !lastRouter) {
-        el.children.forEach(c => {
+        el.children.forEach((c: Route) => {
           c.path = el.path + '/' + c.path
           if (c.children && c.children.length) {
             children = children.concat(filterChildren(c.children, c))
@@ -112,9 +113,9 @@ function filterChildren(childrenMap, lastRouter = false) {
 }
 
 // 动态路由遍历，验证是否具备权限
-export function filterDynamicRoutes(routes) {
-  const res = []
-  routes.forEach(route => {
+export function filterDynamicRoutes(routes: any[]) {
+  const res: any[] = []
+  routes.forEach((route: { permissions: any; roles: any }) => {
     if (route.permissions) {
       if (auth.hasPermiOr(route.permissions)) {
         res.push(route)
@@ -128,7 +129,7 @@ export function filterDynamicRoutes(routes) {
   return res
 }
 
-export const loadView = (view) => {
+export const loadView = (view: string) => {
   let res;
   for (const path in modules) {
     const dir = path.split('views/')[1].split('.vue')[0];
