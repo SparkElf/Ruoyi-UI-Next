@@ -78,7 +78,7 @@
 
 </template>
 
-<script setup>
+<script setup lang="ts">
 import variables from '@/assets/styles/variables.module.scss'
 import axios from 'axios'
 import { ElLoading, ElMessage } from 'element-plus'
@@ -88,7 +88,7 @@ import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
 import { handleThemeStyle } from '@/utils/theme'
 
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance()!;
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const permissionStore = usePermissionStore()
@@ -99,23 +99,24 @@ const storeSettings = computed(() => settingsStore);
 const predefineColors = ref(["#409EFF", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#1e90ff", "#c71585"]);
 
 /** 是否需要topnav */
-function topNavChange(val) {
+function topNavChange(val:boolean) {
   if (!val) {
     appStore.toggleSideBarHide(false);
     permissionStore.setSidebarRouters(permissionStore.defaultRoutes);
   }
 }
 
-function themeChange(val) {
+function themeChange(val:string) {
   settingsStore.theme = val;
   handleThemeStyle(val);
 }
-function handleTheme(val) {
+function handleTheme(val:string) {
   settingsStore.sideTheme = val;
   sideTheme.value = val;
 }
 function saveSetting() {
-  proxy.$modal.loading("正在保存到本地，请稍候...");
+
+  proxy?.$modal.loading("正在保存到本地，请稍候...");
   let layoutSetting = {
     "topNav": storeSettings.value.topNav,
     "tagsView": storeSettings.value.tagsView,
@@ -126,10 +127,10 @@ function saveSetting() {
     "theme": storeSettings.value.theme
   };
   localStorage.setItem("layout-setting", JSON.stringify(layoutSetting));
-  setTimeout(proxy.$modal.closeLoading(), 1000)
+  setTimeout(proxy!.$modal.closeLoading, 1000)
 }
 function resetSetting() {
-  proxy.$modal.loading("正在清除设置缓存并刷新，请稍候...");
+  proxy?.$modal.loading("正在清除设置缓存并刷新，请稍候...");
   localStorage.removeItem("layout-setting")
   setTimeout("window.location.reload()", 1000)
 }
@@ -202,4 +203,4 @@ defineExpose({
     margin: -3px 8px 0px 0px;
   }
 }
-</style>
+</style>: any: string: any: any: string: any: any: string: any

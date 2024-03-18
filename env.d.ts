@@ -1,5 +1,27 @@
 /// <reference types="vite/client" />
 
+import { useDict } from '@/utils/dict'
+import { parseTime, resetForm, addDateRange, handleTree, selectDictLabel, selectDictLabels } from '@/utils/ruoyi'
+import axios from 'axios'
+
+declare module 'vue' {
+  //https://vuejs.org/api/utility-types#componentcustomproperties
+  interface ComponentCustomProperties {
+    useDict:typeof import('@/utils/dict')['useDict']
+    parseTime:typeof import('@/utils/ruoyi')['parseTime']
+    resetForm:typeof import('@/utils/ruoyi')['resetForm']
+    addDateRange:typeof import('@/utils/ruoyi')['addDateRange']
+    handleTree:typeof import('@/utils/ruoyi')['handleTree']
+    selectDictLabel:typeof import('@/utils/ruoyi')['selectDictLabel']
+    selectDictLabels:typeof import('@/utils/ruoyi')['selectDictLabels']
+    $tab:typeof import('@/plugins/tab')['default']
+    $modal:typeof import('@/plugins/modal')['default']
+    $cache:typeof import('@/plugins/cache')['default']
+    $auth:typeof import('@/plugins/auth')['default']
+    $download:typeof import('@/plugins/download')['default']
+  }
+}
+
 interface ImportMetaEnv {
     readonly VITE_APP_TITLE: string
     // more env variables...
