@@ -1,7 +1,7 @@
 <template>
   <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path, onlyOneChild.query)">
+    <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild?.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
+      <app-link v-if="onlyOneChild?.meta" :to="resolvePath(onlyOneChild.path, onlyOneChild.query)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
           <svg-icon :icon-class="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"/>
           <template #title><span class="menu-title" :title="hasTitle(onlyOneChild.meta.title)">{{ onlyOneChild.meta.title }}</span></template>
@@ -27,30 +27,25 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { isExternal } from '@/utils/validate'
-import AppLink from './Link'
+import AppLink from './Link.vue'
 import { getNormalPath } from '@/utils/ruoyi'
-
-const props = defineProps({
-  // route object
-  item: {
-    type: Object,
-    required: true
-  },
-  isNest: {
-    type: Boolean,
-    default: false
-  },
-  basePath: {
-    type: String,
-    default: ''
-  }
+import type { Route } from '@/types/ruoyi';
+declare type SideBarRoute=Route&{noShowingChildren:boolean;children:SideBarRoute[]};
+const props=withDefaults(defineProps<{
+  item: SideBarRoute
+  isNest: boolean
+  basePath:string
+}>(),{
+  isNest:false,
+  basePath:''
 })
 
-const onlyOneChild = ref({});
+const onlyOneChild = ref<SideBarRoute>();
 
-function hasOneShowingChild(children = [], parent) {
+function hasOneShowingChild(children :SideBarRoute[]= [], parent: SideBarRoute) {
+  console.log(children)
   if (!children) {
     children = [];
   }
@@ -63,7 +58,7 @@ function hasOneShowingChild(children = [], parent) {
       return true
     }
   })
-
+  console.log(onlyOneChild)
   // When there is only one child router, the child router is displayed by default
   if (showingChildren.length === 1) {
     return true
@@ -78,7 +73,7 @@ function hasOneShowingChild(children = [], parent) {
   return false
 };
 
-function resolvePath(routePath, routeQuery) {
+function resolvePath(routePath:string, routeQuery?:any) {
   if (isExternal(routePath)) {
     return routePath
   }
@@ -87,16 +82,20 @@ function resolvePath(routePath, routeQuery) {
   }
   if (routeQuery) {
     let query = JSON.parse(routeQuery);
-    return { path: getNormalPath(props.basePath + '/' + routePath), query: query }
+    let url=new URL(getNormalPath(props.basePath + '/' + routePath))
+    Object.keys(query).forEach(key=>{
+      url.searchParams.append(key, query[key])
+    })
+    return url.toString()
   }
   return getNormalPath(props.basePath + '/' + routePath)
 }
 
-function hasTitle(title){
+function hasTitle(title:string){
   if (title.length > 5) {
     return title;
   } else {
     return "";
   }
 }
-</script>
+</script>: {}: string: string: string | any[]: {}: string: string: string | any[]

@@ -4,12 +4,12 @@
   </component>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { isExternal } from '@/utils/validate'
 
 const props = defineProps({
   to: {
-    type: [String, Object],
+    type: String,
     required: true
   }
 })
