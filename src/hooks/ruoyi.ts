@@ -7,7 +7,7 @@ import type { DictItem } from '@/types/ruoyi';
  */
 export function useDict(...args: any[]) {
   const res = ref<Record<string,DictItem[]>>({});
-  return (() => {
+
     args.forEach((dictType, index) => {
       res.value[dictType] = [];
       const dicts = useDictStore().getDict(dictType);
@@ -20,6 +20,5 @@ export function useDict(...args: any[]) {
         })
       }
     })
-    return toRefs(res.value);
-  })()
+    return res.value;
 }

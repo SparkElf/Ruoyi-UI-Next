@@ -7,7 +7,7 @@ import axios from 'axios'
 declare module 'vue' {
   //https://vuejs.org/api/utility-types#componentcustomproperties
   interface ComponentCustomProperties {
-    useDict:typeof import('@/utils/dict')['useDict']
+    useDict:typeof import('@/utils/ruoyi')['useDict']
     parseTime:typeof import('@/utils/ruoyi')['parseTime']
     resetForm:typeof import('@/utils/ruoyi')['resetForm']
     addDateRange:typeof import('@/utils/ruoyi')['addDateRange']
