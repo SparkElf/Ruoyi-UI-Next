@@ -8,11 +8,11 @@
 import type { AxiosResponse } from "axios"
 
 // 日期格式化 毫秒串格式化 1710481514960
-export function parseTime(time: string | number | Date, pattern: string) {
+export function parseTime(time: string | number | Date, pattern='{y}-{m}-{d} {h}:{i}:{s}') {
   if (arguments.length === 0 || !time) {
     return null
   }
-  const format = pattern || '{y}-{m}-{d} {h}:{i}:{s}'
+  const format = pattern 
   let date
   if (typeof time === 'object') {
     date = time
