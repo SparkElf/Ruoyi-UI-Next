@@ -169,11 +169,11 @@ export function mergeRecursive(source: { [x: string]: any }, target: { [x: strin
  * @param {*} parentId 父节点字段 默认 'parentId'
  * @param {*} children 孩子节点字段 默认 'children'
  */
-export function handleTree(data: any, id: any, parentId: any, children: any) {
+export function handleTree(data: any, id='id', parentId='parentId', children='children') {
   let config = {
-    id: id || 'id',
-    parentId: parentId || 'parentId',
-    childrenList: children || 'children'
+    id: id ,
+    parentId: parentId,
+    childrenList: children
   };
 
   let childrenListMap = {} as { [key: string]: any };
