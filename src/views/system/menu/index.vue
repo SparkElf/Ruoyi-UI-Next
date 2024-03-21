@@ -37,7 +37,7 @@
             >新增</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
+            <el-button
                type="info"
                plain
                icon="Sort"
@@ -275,29 +275,33 @@
    </div>
 </template>
 
-<script setup name="Menu">
+<script setup name="Menu" lang="ts">
 import { addMenu, delMenu, getMenu, listMenu, updateMenu } from "@/api/system/menu";
-import SvgIcon from "@/components/SvgIcon";
-import IconSelect from "@/components/IconSelect";
+import SvgIcon from "@/components/SvgIcon/index.vue";
+import IconSelect from "@/components/IconSelect/index.vue";
+import { useDict } from "@/hooks/ruoyi";
+import { handleTree, resetForm } from "@/utils/ruoyi";
+import modal from "@/plugins/modal";
+import type { ElForm } from "element-plus";
 
-const { proxy } = getCurrentInstance();
-const { sys_show_hide, sys_normal_disable } = proxy.useDict("sys_show_hide", "sys_normal_disable");
+const { sys_show_hide, sys_normal_disable } = useDict("sys_show_hide", "sys_normal_disable");
 
-const menuList = ref([]);
+const menuList = ref([] as any[]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const title = ref("");
-const menuOptions = ref([]);
+const menuOptions = ref([] as any[]);
 const isExpandAll = ref(false);
 const refreshTable = ref(true);
-const iconSelectRef = ref(null);
-
+const iconSelectRef = ref<InstanceType<typeof IconSelect>>();
+const menuRef = ref<InstanceType<typeof ElForm>>();
 const data = reactive({
-  form: {},
+  form: {} as Record<string,any>,
   queryParams: {
     menuName: undefined,
-    visible: undefined
+    visible: undefined,
+    status:undefined
   },
   rules: {
     menuName: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }],
@@ -312,7 +316,7 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   listMenu(queryParams.value).then(response => {
-    menuList.value = proxy.handleTree(response.data, "menuId");
+    menuList.value = handleTree(response.data, "menuId");
     loading.value = false;
   });
 }
@@ -320,8 +324,8 @@ function getList() {
 function getTreeselect() {
   menuOptions.value = [];
   listMenu().then(response => {
-    const menu = { menuId: 0, menuName: "主类目", children: [] };
-    menu.children = proxy.handleTree(response.data, "menuId");
+    const menu = { menuId: 0, menuName: "主类目", children: [] as any[] };
+    menu.children = handleTree(response.data, "menuId");
     menuOptions.value.push(menu);
   });
 }
@@ -344,14 +348,14 @@ function reset() {
     visible: "0",
     status: "0"
   };
-  proxy.resetForm("menuRef");
+  resetForm("menuRef");
 }
 /** 展示下拉图标 */
 function showSelectIcon() {
-  iconSelectRef.value.reset();
+  iconSelectRef.value?.reset();
 }
 /** 选择图标 */
-function selected(name) {
+function selected(name:string) {
   form.value.icon = name;
 }
 /** 搜索按钮操作 */
@@ -360,11 +364,11 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  resetForm("queryRef");
   handleQuery();
 }
 /** 新增按钮操作 */
-function handleAdd(row) {
+function handleAdd(row:any) {
   reset();
   getTreeselect();
   if (row != null && row.menuId) {
@@ -384,7 +388,7 @@ function toggleExpandAll() {
   });
 }
 /** 修改按钮操作 */
-async function handleUpdate(row) {
+async function handleUpdate(row:any) {
   reset();
   await getTreeselect();
   getMenu(row.menuId).then(response => {
@@ -395,17 +399,17 @@ async function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["menuRef"].validate(valid => {
+   menuRef.value?.validate(valid => {
     if (valid) {
       if (form.value.menuId != undefined) {
         updateMenu(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
+          modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
         addMenu(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
+          modal.msgSuccess("新增成功");
           open.value = false;
           getList();
         });
@@ -414,12 +418,12 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
-  proxy.$modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?').then(function() {
+function handleDelete(row:any) {
+  modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?').then(function() {
     return delMenu(row.menuId);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    modal.msgSuccess("删除成功");
   }).catch(() => {});
 }
 
