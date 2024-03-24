@@ -12,7 +12,7 @@ export function parseTime(time: string | number | Date, pattern='{y}-{m}-{d} {h}
   if (arguments.length === 0 || !time) {
     return null
   }
-  const format = pattern 
+  const format = pattern
   let date
   if (typeof time === 'object') {
     date = time
@@ -55,6 +55,7 @@ export function resetForm(this: any, refName: string | number) {
     this.$refs[refName].resetFields();
   }
 }
+
 
 // 添加日期范围
 export function addDateRange(params: any, dateRange: any[], propName: string) {

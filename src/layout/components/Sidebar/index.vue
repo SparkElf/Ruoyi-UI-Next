@@ -13,10 +13,9 @@
         mode="vertical"
       >
         <sidebar-item
-          v-for="(route, index) in sidebarRouters"
+          v-for="(route, index) in sidebarRoutes"
           :key="route.path + index"
           :item="route"
-          :base-path="route.path"
         />
       </el-menu>
     </el-scrollbar>
@@ -36,7 +35,7 @@ const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const permissionStore = usePermissionStore()
 
-const sidebarRouters =  computed(() => permissionStore.sidebarRouters);
+const sidebarRoutes =  computed(() => permissionStore.sidebarRoutes);
 const showLogo = computed(() => settingsStore.sidebarLogo);
 const sideTheme = computed(() => settingsStore.sideTheme);
 const theme = computed(() => settingsStore.theme);

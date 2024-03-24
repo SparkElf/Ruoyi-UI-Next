@@ -280,7 +280,7 @@ import { addMenu, delMenu, getMenu, listMenu, updateMenu } from "@/api/system/me
 import SvgIcon from "@/components/SvgIcon/index.vue";
 import IconSelect from "@/components/IconSelect/index.vue";
 import { useDict } from "@/hooks/ruoyi";
-import { handleTree, resetForm } from "@/utils/ruoyi";
+import { handleTree } from "@/utils/ruoyi";
 import modal from "@/plugins/modal";
 import type { ElForm } from "element-plus";
 
@@ -348,7 +348,7 @@ function reset() {
     visible: "0",
     status: "0"
   };
-  resetForm("menuRef");
+  menuRef.value?.resetFields();
 }
 /** 展示下拉图标 */
 function showSelectIcon() {
@@ -364,7 +364,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  resetForm("queryRef");
+  queryRef.value?.resetFields();
   handleQuery();
 }
 /** 新增按钮操作 */
@@ -389,6 +389,7 @@ function toggleExpandAll() {
 }
 /** 修改按钮操作 */
 async function handleUpdate(row:any) {
+   console.log('update')
   reset();
   await getTreeselect();
   getMenu(row.menuId).then(response => {

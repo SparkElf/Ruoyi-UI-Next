@@ -30,7 +30,7 @@ function linkProps() {
     return {
       href: props.to,
       target: '_blank',
-      rel: 'noopener'
+      rel: 'noopener' //关键的安全措施
     }
   }
   return {

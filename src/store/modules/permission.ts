@@ -17,7 +17,8 @@ const usePermissionStore = defineStore(
       addRoutes: [] as Route[],
       defaultRoutes: [] as Route[],
       topbarRouters: [] as Route[],
-      sidebarRouters: [] as Route[]
+      sidebarRoutes: [] as Route[],
+      flattenRoutesMap:{} as Record<string,Route>
     }),
     actions: {
       setRoutes(routes: Route[]) {
@@ -30,25 +31,35 @@ const usePermissionStore = defineStore(
       setTopbarRoutes(routes: Route[]) {
         this.topbarRouters = routes
       },
-      setSidebarRouters(routes: Route[]) {
-        this.sidebarRouters = routes
+      setSidebarRoutes(routes: Route[]) {
+        this.sidebarRoutes = routes
       },
-      generateRoutes(roles: string[]) {
+      setFlattenRoutesMap(routes: Route[]) {
+        routes.forEach((route) => {
+          if(route.name)
+            this.flattenRoutesMap[route.name] = route
+        })
+      },
+      generateRoutes() {
         return new Promise(resolve => {
           // 向后端请求路由数据
           getRouters().then((res: { data: any }) => {
-            const sdata = JSON.parse(JSON.stringify(res.data))
-            const rdata = JSON.parse(JSON.stringify(res.data))
-            const defaultData = JSON.parse(JSON.stringify(res.data))
+
+            const sdata = structuredClone(res.data)//深拷贝
+            const rdata = structuredClone(res.data)//深拷贝
+            const defaultData = structuredClone(res.data)//深拷贝
             const sidebarRoutes = filterAsyncRouter(sdata)
-            const rewriteRoutes = filterAsyncRouter(rdata, undefined, true)
+            const rewriteRoutes = flattenRoutes(rdata)
             const defaultRoutes = filterAsyncRouter(defaultData)
             const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
             asyncRoutes.forEach(route => { router.addRoute(route) })
+
             this.setRoutes(rewriteRoutes)
-            this.setSidebarRouters(constantRoutes.concat(sidebarRoutes))
+            this.setSidebarRoutes(constantRoutes.concat(sidebarRoutes))
+            addRoutesParent(this.sidebarRoutes)
             this.setDefaultRoutes(sidebarRoutes)
             this.setTopbarRoutes(defaultRoutes)
+            this.setFlattenRoutesMap(rewriteRoutes)
             resolve(rewriteRoutes)
           })
         })
@@ -56,8 +67,36 @@ const usePermissionStore = defineStore(
     }
   })
 
+function flattenRoutes(routes: Route[]) {
+  return routes.flatMap(v=>{
+    const root=[] as Route[]
+    flattenRoute(v, root as any)
+    return  root
+  })
+}
+//每次遇到component就提取出路由
+function flattenRoute(route: Route, root:Route[]) {
+  if (route == null) return
+  if (route.component){
+    route.component=loadView(route.component as string)
+    root.push(route)
+  }
+  route.children?.forEach(child => {
+    child.path = route.path  + child.path
+    flattenRoute(child, root)
+  })
+}
+function addRoutesParent(routes?:Route[]){
+
+  routes?.forEach(route=>{
+    route.children?.forEach(child=>{
+      child.parent=route
+    })
+    addRoutesParent(route.children)
+  })
+}
 // 遍历后台传来的路由字符串，转换为组件对象
-function filterAsyncRouter(asyncRouterMap: any[], lastRouter?:Route, type = false) {
+function filterAsyncRouter(asyncRouterMap: any[], lastRouter?: Route, type = false) {
   return asyncRouterMap.filter((route: Route) => {
     if (type && route.children) {
       route.children = filterChildren(route.children)
@@ -84,7 +123,7 @@ function filterAsyncRouter(asyncRouterMap: any[], lastRouter?:Route, type = fals
   })
 }
 
-function filterChildren(childrenMap:Route[], lastRouter?:Route) {
+function filterChildren(childrenMap: Route[], lastRouter?: Route) {
   var children: any[] = []
   childrenMap.forEach((el: Route, index: any) => {
     if (el.children && el.children.length) {

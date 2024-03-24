@@ -102,7 +102,7 @@ const predefineColors = ref(["#409EFF", "#ff4500", "#ff8c00", "#ffd700", "#90ee9
 function topNavChange(val:boolean) {
   if (!val) {
     appStore.toggleSideBarHide(false);
-    permissionStore.setSidebarRouters(permissionStore.defaultRoutes);
+    permissionStore.setSidebarRoutes(permissionStore.defaultRoutes);
   }
 }
 

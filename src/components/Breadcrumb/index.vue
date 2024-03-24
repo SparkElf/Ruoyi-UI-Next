@@ -1,48 +1,48 @@
 <template>
   <el-breadcrumb class="app-breadcrumb" separator="/">
+
     <transition-group name="breadcrumb">
-      <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.name">
-        <span v-if="item.redirect === 'noRedirect' || index == levelList.length - 1" class="no-redirect">{{ item.meta.title }}</span>
-        <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
+
+      <el-breadcrumb-item v-for="(item, index) in levelList" :key="item.name">
+        <a v-if="item.component" :href="item.redirect ? item.redirect : item.path">{{ item.meta?.title }}</a>
+        <span v-else>{{ item.meta?.title }}</span>
       </el-breadcrumb-item>
     </transition-group>
   </el-breadcrumb>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import usePermissionStore from "@/store/modules/permission";
+import type { Route } from "@/types/ruoyi";
+import { findRoute } from "@/utils/route"
 const route = useRoute();
-const router = useRouter();
-const levelList = ref([])
+const { sidebarRoutes, flattenRoutesMap } = storeToRefs(usePermissionStore());
+
+const levelList = ref<Route[]>([])
 
 function getBreadcrumb() {
-  // only show routes with meta.title
-  let matched = route.matched.filter(item => item.meta && item.meta.title);
+  const name = route.name as string
+  if (!flattenRoutesMap.value[name]) return
+  let list = [flattenRoutesMap.value[name]] as Route[]
+  let curSidebarRoute = findRoute(name, sidebarRoutes.value)
 
-
-  levelList.value = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
-
-}
-function isDashboard(route) {
-  const name = route && route.name
-  if (!name) {
-    return false
+  while (curSidebarRoute?.parent) {
+    list.push(curSidebarRoute.parent)
+    curSidebarRoute = curSidebarRoute.parent
   }
-  return name.trim() === 'Index'
-}
-function handleLink(item) {
-  const { redirect, path } = item
-  if (redirect) {
-    router.push(redirect)
-    return
-  }
-  router.push(path)
+
+  levelList.value = list.reverse()
+
+  levelList.value.forEach((item, index) => {
+    if (flattenRoutesMap.value[item.name]) list[index] = flattenRoutesMap.value[item.name]
+  })
 }
 
 watchEffect(() => {
-  // if you go to the redirect page, do not update the breadcrumbs
-  if (route.path.startsWith('/redirect/')) {
-    return
-  }
+  // // if you go to the redirect page, do not update the breadcrumbs
+  // if (route.path.startsWith('/redirect/')) {
+  //   return
+  // }
   getBreadcrumb()
 })
 getBreadcrumb();
@@ -55,9 +55,19 @@ getBreadcrumb();
   line-height: 50px;
   margin-left: 8px;
 
-  .no-redirect {
+  span {
     color: #97a8be;
     cursor: text;
   }
+
+  a {
+    font-weight: 500;
+    cursor:pointer !important;
+    &:hover{
+      color: var(--el-color-primary)!important;
+    }
+
+  }
+
 }
 </style>
