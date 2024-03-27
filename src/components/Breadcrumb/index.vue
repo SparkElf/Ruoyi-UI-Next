@@ -20,9 +20,12 @@ const { sidebarRoutes, flattenRoutesMap } = storeToRefs(usePermissionStore());
 
 const levelList = ref<Route[]>([])
 
-function getBreadcrumb() {
-  const name = route.name as string
-  if (!flattenRoutesMap.value[name]) return
+function getBreadcrumb(to:Route) {
+  const name = to.name as string
+  if (!flattenRoutesMap.value[name]) {
+    levelList.value = []
+    return
+  }
   let list = [flattenRoutesMap.value[name]] as Route[]
   let curSidebarRoute = findRoute(name, sidebarRoutes.value)
 
@@ -37,15 +40,13 @@ function getBreadcrumb() {
     if (flattenRoutesMap.value[item.name]) list[index] = flattenRoutesMap.value[item.name]
   })
 }
-
-watchEffect(() => {
-  // // if you go to the redirect page, do not update the breadcrumbs
-  // if (route.path.startsWith('/redirect/')) {
-  //   return
-  // }
-  getBreadcrumb()
+// onBeforeRouteUpdate((to) => {
+//   getBreadcrumb(to as any)
+// })
+watch(route,(newv,oldv) => {
+  getBreadcrumb(newv as any)
 })
-getBreadcrumb();
+//getBreadcrumb();
 </script>
 
 <style lang='scss' scoped>
