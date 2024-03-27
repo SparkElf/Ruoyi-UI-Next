@@ -5,6 +5,12 @@ import { parseTime, resetForm, addDateRange, handleTree, selectDictLabel, select
 import axios from 'axios'
 
 declare module 'vue' {
+  interface GlobalComponents {
+    XDialog: typeof import('./components/XDialog/src/XDialog.vue')['default']
+    XContentWrap:typeof import('@/components/XContentWrap/src/ContentWrap.vue')['default']
+    XIcon:typeof import('@/components/XIcon/index')['XIcon']
+    XIcon:typeof import('@/components/XIcon/index')['XIconSelect']
+  }
   //https://vuejs.org/api/utility-types#componentcustomproperties
   interface ComponentCustomProperties {
     useDict:typeof import('@/utils/ruoyi')['useDict']
@@ -24,6 +30,7 @@ declare module 'vue' {
 
 interface ImportMetaEnv {
     readonly VITE_APP_TITLE: string
+    readonly VITE_APP_BASE_URL: string
     // more env variables...
 }
 
