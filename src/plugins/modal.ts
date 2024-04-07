@@ -1,9 +1,14 @@
+
 import { ElMessage, ElMessageBox, ElNotification, ElLoading, type LoadingParentElement, ElLoadingService, type MessageParamsWithType } from 'element-plus'
 import type { ComponentOptionsBase } from 'vue';
 
 let loadingInstance:ReturnType<typeof ElLoadingService>
 
 export default {
+  success:ElMessage.success,
+  error:ElMessage.error,
+  warning:ElMessage.warning,
+  info:ElMessage.info,
   // 消息提示
   msg(content: string) {
     ElMessage.info(content)
@@ -51,6 +56,17 @@ export default {
   // 警告通知
   notifyWarning(content:string) {
     ElNotification.warning(content)
+  },
+  delConfirm(content?: string, tip?: string) {
+    return ElMessageBox.confirm(
+      content ? content : ('是否删除所选中数据？'),
+      tip ? tip : ('系统提示'),
+      {
+        confirmButtonText: ('确认'),
+        cancelButtonText: ('取消'),
+        type: 'warning'
+      }
+    )
   },
   // 确认窗体
   confirm(content:string) {
