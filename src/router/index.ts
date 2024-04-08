@@ -79,6 +79,12 @@ export const constantRoutes = [
     hidden: true,
     name: 'Profile',
     meta: { title: '个人中心', icon: 'user' }
+  },
+  {
+    path: '/bpm/modelEditor',
+    component: () => import('@/views/bpm/model/Editor.vue'),
+    hidden: true,
+    name: 'BpmModelEditor',
   }
 ] as Route[]
 

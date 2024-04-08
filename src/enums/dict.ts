@@ -9,4 +9,5 @@ export const DICT_TYPE = {
     'sys_notice_status': 'sys_notice_status',
     'sys_oper_type': 'sys_oper_type',
     'sys_common_status': 'sys_common_status',
+    'bpm_task_status': 'bpm_task_status',
 };

@@ -65,6 +65,7 @@
                         <label v-else>暂无表单</label>
                     </template>
                 </el-table-column>
+                <el-table-column label="流程描述" align="center" prop="metaInfo.description" width="100" />
                 <el-table-column label="创建时间" align="center" prop="createTime" width="180" :formatter="dateFormatter" />
                 <el-table-column label="最新部署的流程定义" align="center">
                     <el-table-column label="流程版本" align="center" prop="processDefinition.version" width="100">
@@ -159,7 +160,7 @@ const { push } = useRouter() // 路由
 
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
-const list = ref([]) // 列表的数据
+const list = ref<any[]>([]) // 列表的数据
 const queryParams = reactive({
     pageNum: 1,
     pageSize: 10,
@@ -175,8 +176,11 @@ const getList = async () => {
     loading.value = true
     try {
         const data = await ModelApi.getModelPage(queryParams)
-        console.log(data)
         list.value = data.rows
+        for(let row of list.value)
+        {
+            row.metaInfo=JSON.parse(row.metaInfo)
+        }
         total.value = data.total
     } finally {
         loading.value = false
@@ -240,9 +244,9 @@ const handleChangeState = async (row) => {
 }
 
 /** 设计流程 */
-const handleDesign = (row) => {
+const handleDesign = (row:any) => {
     push({
-        name: 'BpmModelEditor',
+        path: '/bpm/modelEditor',
         query: {
             modelId: row.id
         }

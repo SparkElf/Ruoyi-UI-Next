@@ -155,7 +155,7 @@
     name: [{ required: true, message: '参数名称不能为空', trigger: 'blur' }],
     key: [{ required: true, message: '参数键名不能为空', trigger: 'blur' }],
     category: [{ required: true, message: '参数分类不能为空', trigger: 'blur' }],
-    icon: [{ required: true, message: '参数图标不能为空', trigger: 'blur' }],
+    //icon: [{ required: true, message: '参数图标不能为空', trigger: 'blur' }],
     value: [{ required: true, message: '参数键值不能为空', trigger: 'blur' }],
     visible: [{ required: true, message: '是否可见不能为空', trigger: 'blur' }]
   })
@@ -173,7 +173,7 @@
     if (id) {
       formLoading.value = true
       try {
-        formData.value = await ModelApi.getModel(id)
+        formData.value = await ModelApi.getModel(id).then(res=>res.data)
       } finally {
         formLoading.value = false
       }

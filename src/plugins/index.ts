@@ -3,7 +3,9 @@ import auth from './auth'
 import cache from './cache'
 import modal from './modal'
 import download from './download'
+
 import type { App } from 'vue'
+import { installElementUI } from './elementui'
 
 export default function installPlugins(app:App<Element>){
   // 页签操作
@@ -16,4 +18,5 @@ export default function installPlugins(app:App<Element>){
   app.config.globalProperties.$modal = modal
   // 下载文件
   app.config.globalProperties.$download = download
+  installElementUI(app)
 }

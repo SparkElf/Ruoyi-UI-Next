@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","vite.config.ts,vitest.config.ts","auto-imports.d.ts"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","vite.config.ts,vitest.config.ts","auto-imports.d.ts","icon.d.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
