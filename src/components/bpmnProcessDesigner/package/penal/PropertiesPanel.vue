@@ -106,7 +106,7 @@ provide('width', props.width)
 const bpmnInstances = () => (window as any)?.bpmnInstances
 
 // 监听 props.bpmnModeler 然后 initModels
-const unwatchBpmn = watch(
+watch(
   () => bpmStore.bpmnModeler,
   () => {
     // 避免加载时 流程图 并未加载完成
@@ -126,10 +126,7 @@ const unwatchBpmn = watch(
       replace: bpmStore.bpmnModeler.get('replace'),
       selection: bpmStore.bpmnModeler.get('selection')
     }
-
-
     getActiveElement()
-    unwatchBpmn()
   },
   {
     immediate: true

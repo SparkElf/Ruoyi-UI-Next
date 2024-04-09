@@ -14,6 +14,7 @@ export type BpmModel={
     remark?: string
     createTime?: string
     bpmnXml?: string
+    loadedTime?:number
 }
 export type BpmnInstances={
         modeler: BpmnModeler,

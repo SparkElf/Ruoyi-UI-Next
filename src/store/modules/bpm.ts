@@ -18,12 +18,14 @@ export const useBpmStore = defineStore('bpm', () => {
         remark: undefined,
         createTime: undefined,
         bpmnXml: undefined,
+        loadedTime:undefined
     })
     const bpmnModeler=shallowRef<BpmnModeler>()
     const bpmnElement=shallowRef<Element>()
     const bpmnInstances=shallowRef<BpmnInstances>()
     function updateCurrentModel(model: BpmModel) {
         Object.assign(currentModel, model)
+        currentModel.loadedTime=Date.now()
     }
     function updateElementBaseInfo(obj:any){
         if(!bpmnElement.value) return
