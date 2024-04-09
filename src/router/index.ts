@@ -82,7 +82,7 @@ export const constantRoutes = [
   },
   {
     path: '/bpm/modelEditor',
-    component: () => import('@/views/bpm/model/Editor.vue'),
+    component: () => import('@/views/bpm/model/BpmModelEditor.vue'),
     hidden: true,
     name: 'BpmModelEditor',
   }

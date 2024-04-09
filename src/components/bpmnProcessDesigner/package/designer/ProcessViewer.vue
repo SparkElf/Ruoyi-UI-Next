@@ -103,7 +103,7 @@ const highlightDiagram = async () => {
   let findProcessTask = false //是否已经高亮了进行中的任务
   //进行中高亮之后的任务 key 集合，用于过滤掉 taskList 进行中后面的任务，避免进行中后面的数据 Hover 还有数据
   let removeTaskDefinitionKeyList = []
-  // debugger
+  //
   bpmnModeler.getDefinitions().rootElements[0].flowElements?.forEach((n: any) => {
     let activity: any = activityList.find((m: any) => m.key === n.id) // 找到对应的活动
     if (!activity) {
@@ -134,7 +134,7 @@ const highlightDiagram = async () => {
       // 处理 outgoing 出线
       const outgoing = getActivityOutgoing(activity)
       outgoing?.forEach((nn: any) => {
-        // debugger
+        //
         let targetActivity: any = activityList.find((m: any) => m.key === nn.targetRef.id)
         // 如果目标活动存在，则根据该活动是否结束，进行【bpmn:SequenceFlow】连线的高亮设置
         if (targetActivity) {

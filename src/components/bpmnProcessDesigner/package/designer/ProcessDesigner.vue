@@ -1,23 +1,28 @@
 <template>
   <div class="my-process-designer">
     <div class="my-process-designer__header" style="z-index: 999; display: table-row-group">
-      <slot name="control-header"></slot>
-      <template v-if="!$slots['control-header']">
+      <slot name="control-header">
         <el-button-group key="file-control">
           <el-button :icon="IconFolderOpened" title="打开文件" @click="refFile.click()" />
           <el-tooltip effect="light" placement="bottom">
             <template #content>
               <div style="color: #409eff">
                 <!-- <el-button link @click="downloadProcessAsXml()">下载为XML文件</el-button> -->
-                <el-button title="下载为XML文件" @click="downloadProcessAsXml()" />
+                <el-button text title="下载为XML文件" @click="downloadProcessAsXml()" >
+                  下载为XML文件
+                </el-button>
                 <br />
 
                 <!-- <el-button link @click="downloadProcessAsSvg()">下载为SVG文件</el-button> -->
-                <el-button title="下载为SVG文件" @click="downloadProcessAsSvg()" />
+                <el-button text title="下载为SVG文件" @click="downloadProcessAsSvg()" >
+                  下载为SVG文件
+              </el-button>
                 <br />
 
                 <!-- <el-button link @click="downloadProcessAsBpmn()">下载为BPMN文件</el-button> -->
-                <el-button title="下载为BPMN文件" @click="downloadProcessAsBpmn()" />
+                <el-button text title="下载为BPMN文件" @click="downloadProcessAsBpmn()" >
+                  下载为BPMN文件
+              </el-button>
               </div>
             </template>
             <el-button title="下载文件" :icon="IconDownload" />
@@ -26,10 +31,14 @@
             <el-button :icon="IconView" title="浏览" />
             <template #content>
               <!-- <el-button link @click="previewProcessXML">预览XML</el-button> -->
-              <el-button title="预览XML" @click="previewProcessXML" />
+              <el-button text title="预览XML" @click="previewProcessXML" >
+                预览XML
+              </el-button>
               <br />
               <!-- <el-button link @click="previewProcessJson">预览JSON</el-button> -->
-              <el-button title="预览JSON" @click="previewProcessJson" />
+              <el-button text title="预览JSON" @click="previewProcessJson" >
+                预览JSON
+              </el-button>
             </template>
           </el-tooltip>
           <el-tooltip
@@ -167,16 +176,7 @@
           :type="props.headerButtonType"
           :disabled="simulationStatus"
         />
-      </template>
-      <!-- 用于打开本地文件-->
-      <input
-        type="file"
-        id="files"
-        ref="refFile"
-        style="display: none"
-        accept=".xml, .bpmn"
-        @change="importLocalFile"
-      />
+      </slot>
     </div>
     <div class="my-process-designer__container">
       <div
@@ -238,6 +238,7 @@ import flowableModdleExtension from './plugins/extension-moddle/flowable'
 // import xml2js from 'xml-js'
 // import xml2js from 'fast-xml-parser'
 import { XmlNode, XmlNodeType, parseXmlString } from 'steady-xml'
+import { useBpmStore } from '@/store/modules/bpm'
 // 代码高亮插件
 // import hljs from 'highlight.js/lib/highlight'
 // import 'highlight.js/styles/github-gist.css'
@@ -246,7 +247,7 @@ import { XmlNode, XmlNodeType, parseXmlString } from 'steady-xml'
 // const eventName = reactive({
 //   name: ''
 // })
-
+const bpmStore=useBpmStore()
 defineOptions({ name: 'MyProcessDesigner' })
 
 const bpmnCanvas = ref()
@@ -264,8 +265,6 @@ const emit = defineEmits([
 ])
 
 const props = defineProps({
-  value: String, // xml 字符串
-  // valueWatch: true, // xml 字符串的 watch 状态
   processId: String, // 流程 key 标识
   processName: String, // 流程 name 名字
   formId: Number, // 流程 form 表单编号
@@ -298,7 +297,7 @@ const props = defineProps({
   },
   prefix: {
     type: String,
-    default: 'camunda'
+    default: 'flowable'
   },
   events: {
     type: Array,
@@ -318,7 +317,7 @@ const props = defineProps({
 })
 
 provide('configGlobal', props)
-let bpmnModeler: any = null
+let bpmnModeler: BpmnModeler|null = null
 const defaultZoom = ref(1)
 const previewModelVisible = ref(false)
 const simulationStatus = ref(false)
@@ -327,7 +326,7 @@ const previewType = ref('xml')
 const recoverable = ref(false)
 const revocable = ref(false)
 const additionalModules = computed(() => {
-  console.log(props.additionalModel, 'additionalModel')
+  ////console.log(props.additionalModel, 'additionalModel')
   const Modules: any[] = []
   // 仅保留用户自定义扩展模块
   if (props.onlyCustomizeAddi) {
@@ -359,7 +358,7 @@ const additionalModules = computed(() => {
   // if (this.prefix === "bpmn") {
   //   Modules.push(bpmnModdleExtension);
   // }
-  console.log(props.prefix, 'props.prefix ')
+  ////console.log(props.prefix, 'props.prefix ')
   if (props.prefix === 'camunda') {
     Modules.push(camundaModdleExtension)
   }
@@ -373,9 +372,9 @@ const additionalModules = computed(() => {
   return Modules
 })
 const moddleExtensions = computed(() => {
-  console.log(props.onlyCustomizeModdle, 'props.onlyCustomizeModdle')
-  console.log(props.moddleExtension, 'props.moddleExtension')
-  console.log(props.prefix, 'props.prefix')
+  ////console.log(props.onlyCustomizeModdle, 'props.onlyCustomizeModdle')
+  ////console.log(props.moddleExtension, 'props.moddleExtension')
+ // //console.log(props.prefix, 'props.prefix')
   const Extensions: any = {}
   // 仅使用用户自定义模块
   if (props.onlyCustomizeModdle) {
@@ -401,15 +400,15 @@ const moddleExtensions = computed(() => {
   }
   return Extensions
 })
-console.log(additionalModules, 'additionalModules()')
-console.log(moddleExtensions, 'moddleExtensions()')
+////console.log(additionalModules, 'additionalModules()')
+////console.log(moddleExtensions, 'moddleExtensions()')
 const initBpmnModeler = () => {
   if (bpmnModeler) return
-  let data = document.getElementById('bpmnCanvas')
-  console.log(data, 'data')
-  console.log(props.keyboard, 'props.keyboard')
-  console.log(additionalModules, 'additionalModules()')
-  console.log(moddleExtensions, 'moddleExtensions()')
+  let data = document.getElementById('bpmnCanvas') as HTMLElement
+  ////console.log(data, 'data')
+  ////console.log(props.keyboard, 'props.keyboard')
+  ////console.log(additionalModules, 'additionalModules()')
+  ////console.log(moddleExtensions, 'moddleExtensions()')
 
   bpmnModeler = new BpmnModeler({
     // container: this.$refs['bpmn-canvas'],
@@ -424,7 +423,7 @@ const initBpmnModeler = () => {
     // },
     keyboard: props.keyboard ? { bindTo: document } : null,
     // additionalModules: additionalModules.value,
-    additionalModules: additionalModules.value,
+    additionalModules: additionalModules.value as any,
     moddleExtensions: moddleExtensions.value
 
     // additionalModules: [
@@ -434,26 +433,26 @@ const initBpmnModeler = () => {
     // propertiesProviderModule
     // ],
     // moddleExtensions: { camunda: moddleExtensions.value }
-  })
+  });
 
   // bpmnModeler.createDiagram()
 
-  // console.log(bpmnModeler, 'bpmnModeler111111')
+  // //console.log(bpmnModeler, 'bpmnModeler111111')
   emit('init-finished', bpmnModeler)
   initModelListeners()
 }
 
 const initModelListeners = () => {
   const EventBus = bpmnModeler.get('eventBus')
-  console.log(EventBus, 'EventBus')
+  //console.log(EventBus, 'EventBus')
   // 注册需要的监听事件, 将. 替换为 - , 避免解析异常
   props.events.forEach((event: any) => {
-    EventBus.on(event, function (eventObj) {
+    EventBus.on(event, function (eventObj:any) {
       let eventName = event.replace(/\./g, '-')
       // eventName.name = eventName
       let element = eventObj ? eventObj.element : null
-      console.log(eventName, 'eventName')
-      console.log(element, 'element')
+      //console.log(eventName, 'eventName')
+      //console.log(element, 'element')
       emit('element-click', element, eventObj)
       // emit(eventName, element, eventObj)
     })
@@ -461,9 +460,9 @@ const initModelListeners = () => {
   // 监听图形改变返回xml
   EventBus.on('commandStack.changed', async (event) => {
     try {
-      recoverable.value = bpmnModeler.get('commandStack').canRedo()
-      revocable.value = bpmnModeler.get('commandStack').canUndo()
-      let { xml } = await bpmnModeler.saveXML({ format: true })
+      recoverable.value = bpmnModeler?.get('commandStack').canRedo()
+      revocable.value = bpmnModeler?.get('commandStack').canUndo()
+      let { xml } = await bpmnModeler?.saveXML({ format: true })
       emit('commandStack-changed', event)
       emit('input', xml)
       emit('change', xml)
@@ -479,17 +478,18 @@ const initModelListeners = () => {
   })
 }
 /* 创建新的流程图 */
-const createNewDiagram = async (xml) => {
-  console.log(xml, 'xml')
+const createNewDiagram = async (xml?:string) => {
+
+  //console.log(xml, 'xml')
   // 将字符串转换成图显示出来
   let newId = props.processId || `Process_${new Date().getTime()}`
   let newName = props.processName || `业务流程_${new Date().getTime()}`
   let xmlString = xml || DefaultEmptyXML(newId, newName, props.prefix)
   try {
-    // console.log(xmlString, 'xmlString')
-    // console.log(this.bpmnModeler.importXML);
+    // //console.log(xmlString, 'xmlString')
+    // //console.log(this.bpmnModeler.importXML);
     let { warnings } = await bpmnModeler.importXML(xmlString)
-    console.log(warnings, 'warnings')
+    //console.log(warnings, 'warnings')
     if (warnings && warnings.length) {
       warnings.forEach((warn) => console.warn(warn))
     }
@@ -569,7 +569,7 @@ const downloadProcessAsSvg = () => {
 }
 const processSimulation = () => {
   simulationStatus.value = !simulationStatus.value
-  console.log(bpmnModeler.get('toggleMode', 'strict'), "bpmnModeler.get('toggleMode')")
+  //console.log(bpmnModeler.get('toggleMode', 'strict'), "bpmnModeler.get('toggleMode')")
   props.simulation && bpmnModeler.get('toggleMode', 'strict').toggleMode()
 }
 const processRedo = () => {
@@ -594,16 +594,7 @@ const processZoomOut = (zoomStep = 0.1) => {
   defaultZoom.value = newZoom
   bpmnModeler.get('canvas').zoom(defaultZoom.value)
 }
-// const processZoomTo = (newZoom = 1) => {
-//   if (newZoom < 0.2) {
-//     throw new Error('[Process Designer Warn ]: The zoom ratio cannot be less than 0.2')
-//   }
-//   if (newZoom > 4) {
-//     throw new Error('[Process Designer Warn ]: The zoom ratio cannot be greater than 4')
-//   }
-//   defaultZoom = newZoom
-//   bpmnModeler.get('canvas').zoom(newZoom)
-// }
+
 const processReZoom = () => {
   defaultZoom.value = 1
   bpmnModeler.get('canvas').zoom('fit-viewport', 'auto')
@@ -632,9 +623,9 @@ const elementsAlign = (align) => {
 }
 /*-----------------------------    方法结束     ---------------------------------*/
 const previewProcessXML = () => {
-  console.log(bpmnModeler.saveXML, 'bpmnModeler')
+  //console.log(bpmnModeler.saveXML, 'bpmnModeler')
   bpmnModeler.saveXML({ format: true }).then(({ xml }) => {
-    // console.log(xml, 'xml111111')
+    // //console.log(xml, 'xml111111')
     previewResult.value = xml
     previewType.value = 'xml'
     previewModelVisible.value = true
@@ -642,23 +633,23 @@ const previewProcessXML = () => {
 }
 const previewProcessJson = () => {
   bpmnModeler.saveXML({ format: true }).then(({ xml }) => {
-    // console.log(xml, 'xml')
+    // //console.log(xml, 'xml')
 
     // const rootNode = parseXmlString(xml)
-    // console.log(rootNode, 'rootNoderootNode')
+    // //console.log(rootNode, 'rootNoderootNode')
     const rootNodes = new XmlNode(XmlNodeType.Root, parseXmlString(xml))
-    // console.log(rootNodes, 'rootNodesrootNodesrootNodes')
-    // console.log(rootNodes.parent.toJsObject(), 'rootNodes.toJSON()')
-    // console.log(JSON.stringify(rootNodes.parent.toJsObject()), 'rootNodes.toJSON()')
-    // console.log(JSON.stringify(rootNodes.parent.toJSON()), 'rootNodes.toJSON()')
+    // //console.log(rootNodes, 'rootNodesrootNodesrootNodes')
+    // //console.log(rootNodes.parent.toJsObject(), 'rootNodes.toJSON()')
+    // //console.log(JSON.stringify(rootNodes.parent.toJsObject()), 'rootNodes.toJSON()')
+    // //console.log(JSON.stringify(rootNodes.parent.toJSON()), 'rootNodes.toJSON()')
 
     // const parser = new xml2js.XMLParser()
     // let jObj = parser.parse(xml)
-    // console.log(jObj, 'jObjjObjjObjjObjjObj')
+    // //console.log(jObj, 'jObjjObjjObjjObjjObj')
     // const builder = new xml2js.XMLBuilder(xml)
     // const xmlContent = builder
-    // console.log(xmlContent, 'xmlContent')
-    // console.log(xml2js, 'convertconvertconvert')
+    // //console.log(xmlContent, 'xmlContent')
+    // //console.log(xml2js, 'convertconvertconvert')
     previewResult.value = rootNodes.parent?.toJSON() as unknown as string
     // previewResult.value = jObj
     // previewResult.value = convert.xml2json(xml,  {explicitArray : false},{ spaces: 2 })
@@ -668,14 +659,11 @@ const previewProcessJson = () => {
 }
 /* ------------------------------------------------ 芋道源码 methods ------------------------------------------------------ */
 const processSave = async () => {
-  // console.log(bpmnModeler, 'bpmnModelerbpmnModelerbpmnModelerbpmnModeler')
-  const { err, xml } = await bpmnModeler.saveXML()
-  // console.log(err, 'errerrerrerrerr')
-  // console.log(xml, 'xmlxmlxmlxmlxml')
-  // 读取异常时抛出异常
-  if (err) {
-    // this.$modal.msgError('保存模型失败，请重试！')
-    alert('保存模型失败，请重试！')
+  const { error, xml } = await bpmnModeler!.saveXML()
+  debugger
+  bpmStore.currentModel.bpmnXml=xml
+  if (error) {
+    ElMessage.error('保存模型失败，请重试！')
     return
   }
   // 触发 save 事件
@@ -683,18 +671,15 @@ const processSave = async () => {
 }
 /** 高亮显示 */
 // const highlightedCode = (previewType, previewResult) => {
-//   console.log(previewType, 'previewType, previewResult')
-//   console.log(previewResult, 'previewType, previewResult')
-//   console.log(hljs.highlight, 'hljs.highlight')
+//   //console.log(previewType, 'previewType, previewResult')
+//   //console.log(previewResult, 'previewType, previewResult')
+//   //console.log(hljs.highlight, 'hljs.highlight')
 //   const result = hljs.highlight(previewType, previewResult.value || '', true)
 //   return result.value || '&nbsp;'
 // }
-onBeforeMount(() => {
-  console.log(props, 'propspropspropsprops')
-})
+watch(()=>bpmStore.currentModel.id,()=> createNewDiagram(bpmStore.currentModel.bpmnXml))
 onMounted(() => {
   initBpmnModeler()
-  createNewDiagram(props.value)
 })
 onBeforeUnmount(() => {
   // this.$once('hook:beforeDestroy', () => {

@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <el-card class="app-row">
             <!-- 搜索工作栏 -->
             <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">

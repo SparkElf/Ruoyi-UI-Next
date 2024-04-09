@@ -65,11 +65,11 @@ app.component('RightToolbar', RightToolbar)
 app.component('Editor', Editor)
 
 app.use(router)
-app.use(store)
+
 app.use(plugins)
 app.use(elementIcons)
 app.component('svg-icon', SvgIcon)
 
 directive(app)
-
+app.use(store)
 app.mount('#app')

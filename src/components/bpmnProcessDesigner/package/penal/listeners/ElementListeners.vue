@@ -302,7 +302,7 @@ const resetListenersList = () => {
 }
 // 打开 监听器详情 侧边栏
 const openListenerForm = (listener, index?) => {
-  // debugger
+  //
   if (listener) {
     listenerForm.value = initListenerForm(listener)
     editingListenerIndex.value = index
@@ -340,7 +340,7 @@ const openListenerFieldForm = (field, index?) => {
 }
 // 保存监听器注入字段
 const saveListenerFiled = async () => {
-  // debugger
+  //
   let validateStatus = await listenerFieldFormRef.value.validate()
   if (!validateStatus) return // 验证不通过直接返回
   if (editingListenerFieldIndex.value === -1) {
@@ -357,7 +357,7 @@ const saveListenerFiled = async () => {
 }
 // 移除监听器字段
 const removeListenerField = (index) => {
-  // debugger
+  //
   ElMessageBox.confirm('确认移除该字段吗？', '提示', {
     confirmButtonText: '确 认',
     cancelButtonText: '取 消'
@@ -370,7 +370,7 @@ const removeListenerField = (index) => {
 }
 // 移除监听器
 const removeListener = (index) => {
-  debugger
+
   ElMessageBox.confirm('确认移除该监听器吗？', '提示', {
     confirmButtonText: '确 认',
     cancelButtonText: '取 消'
@@ -387,7 +387,7 @@ const removeListener = (index) => {
 }
 // 保存监听器配置
 const saveListenerConfig = async () => {
-  // debugger
+  //
   let validateStatus = await listenerFormRef.value.validate()
   if (!validateStatus) return // 验证不通过直接返回
   const listenerObject = createListenerObject(listenerForm.value, false, prefix)

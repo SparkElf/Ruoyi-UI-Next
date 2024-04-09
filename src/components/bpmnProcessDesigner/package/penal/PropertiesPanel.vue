@@ -11,10 +11,9 @@
           :id-edit-disabled="idEditDisabled"
           :business-object="elementBusinessObject"
           :type="elementType"
-          :model="model"
         />
       </el-collapse-item>
-      <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
+      <!-- <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
         <template #title><Icon icon="ep:comment" />消息与信号</template>
         <signal-and-massage />
       </el-collapse-item>
@@ -53,7 +52,7 @@
       <el-collapse-item name="other" key="other">
         <template #title><Icon icon="ep:promotion" />其他</template>
         <element-other-config :id="elementId" />
-      </el-collapse-item>
+      </el-collapse-item> -->
     </el-collapse>
   </div>
 </template>
@@ -66,9 +65,10 @@ import FlowCondition from './flow-condition/FlowCondition.vue'
 import SignalAndMassage from './signal-message/SignalAndMessage.vue'
 import ElementListeners from './listeners/ElementListeners.vue'
 import ElementProperties from './properties/ElementProperties.vue'
-// import ElementForm from './form/ElementForm.vue'
 import UserTaskListeners from './listeners/UserTaskListeners.vue'
-
+import { useBpmStore } from '@/store/modules/bpm'
+import BpmnModeler from 'bpmn-js/lib/Modeler'
+import type { Element } from 'bpmn-js/lib/model/Types'
 defineOptions({ name: 'MyPropertiesPanel' })
 
 /**
@@ -79,7 +79,7 @@ defineOptions({ name: 'MyPropertiesPanel' })
  */
 const props = defineProps({
   bpmnModeler: {
-    type: Object,
+    type: BpmnModeler,
     default: () => {}
   },
   prefix: {
@@ -93,8 +93,7 @@ const props = defineProps({
   idEditDisabled: {
     type: Boolean,
     default: false
-  },
-  model: Object // 流程模型的数据
+  }
 })
 
 const activeTab = ref('base')
@@ -104,7 +103,7 @@ const elementBusinessObject = ref<any>({}) // 元素 businessObject 镜像，提
 const conditionFormVisible = ref(false) // 流转条件设置
 const formVisible = ref(false) // 表单配置
 const bpmnElement = ref()
-
+const bpmStore=useBpmStore()
 provide('prefix', props.prefix)
 provide('width', props.width)
 const bpmnInstances = () => (window as any)?.bpmnInstances
@@ -133,7 +132,7 @@ const unwatchBpmn = watch(
       selection: props.bpmnModeler.get('selection')
     }
 
-    console.log(bpmnInstances(), 'window.bpmnInstances')
+
     getActiveElement()
     unwatchBpmn()
   },
@@ -161,7 +160,7 @@ const getActiveElement = () => {
   })
 }
 // 初始化数据
-const initFormOnChanged = (element) => {
+const initFormOnChanged = (element:Element) => {
   let activatedElement = element
   if (!activatedElement) {
     activatedElement =
@@ -181,7 +180,7 @@ const initFormOnChanged = (element) => {
   bpmnElement.value = activatedElement
   elementId.value = activatedElement.id
   elementType.value = activatedElement.type.split(':')[1] || ''
-  elementBusinessObject.value = JSON.parse(JSON.stringify(activatedElement.businessObject))
+  elementBusinessObject.value = structuredClone(activatedElement.businessObject)
   conditionFormVisible.value = !!(
     elementType.value === 'SequenceFlow' &&
     activatedElement.source &&

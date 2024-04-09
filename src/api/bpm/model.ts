@@ -1,3 +1,4 @@
+import type { BpmModel } from '@/types/bpm'
 import request from '@/utils/request'
 
 export type ProcessDefinitionVO = {
@@ -7,29 +8,13 @@ export type ProcessDefinitionVO = {
   suspensionState: number
 }
 
-export type ModelVO = {
-  id: number
-  formName: string
-  key: string
-  name: string
-  description: string
-  category: string
-  formType: number
-  formId: number
-  formCustomCreatePath: string
-  formCustomViewPath: string
-  processDefinition: ProcessDefinitionVO
-  status: number
-  remark: string
-  createTime: string
-  bpmnXml: string
-}
+export type ModelVO = BpmModel
 
 export const getModelPage = async (params:any) => {
   return await request({ url: '/bpm/model/page', params ,method:'get'})
 }
 
-export const getModel = async (id: number) => {
+export const getModel = async (id: string) => {
   return await request({ url: '/bpm/model/get?id=' + id,method:'get' })
 }
 
