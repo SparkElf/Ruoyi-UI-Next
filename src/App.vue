@@ -9,7 +9,7 @@ import { handleThemeStyle } from '@/utils/theme'
 import Layout from '@/layout/index.vue'
 import { isContentPage } from '@/router'
 const route=useRoute()
-console.log(route)
+
 onMounted(() => {
   nextTick(() => {
     // 初始化主题样式

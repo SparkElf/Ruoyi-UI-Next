@@ -4,14 +4,10 @@
       <el-collapse-item name="base">
         <!-- class="panel-tab__title" -->
         <template #title>
-          <Icon icon="ep:info-filled" />
+          <ElIcon icon="ep:info-filled" ><IconInfoFilled></IconInfoFilled></ElIcon>
           常规</template
         >
-        <ElementBaseInfo
-          :id-edit-disabled="idEditDisabled"
-          :business-object="elementBusinessObject"
-          :type="elementType"
-        />
+        <ElementBaseInfo/>
       </el-collapse-item>
       <!-- <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
         <template #title><Icon icon="ep:comment" />消息与信号</template>
@@ -58,17 +54,18 @@
 </template>
 <script lang="ts" setup>
 import ElementBaseInfo from './base/ElementBaseInfo.vue'
-import ElementOtherConfig from './other/ElementOtherConfig.vue'
-import ElementTask from './task/ElementTask.vue'
-import ElementMultiInstance from './multi-instance/ElementMultiInstance.vue'
-import FlowCondition from './flow-condition/FlowCondition.vue'
-import SignalAndMassage from './signal-message/SignalAndMessage.vue'
-import ElementListeners from './listeners/ElementListeners.vue'
-import ElementProperties from './properties/ElementProperties.vue'
-import UserTaskListeners from './listeners/UserTaskListeners.vue'
+// import ElementOtherConfig from './other/ElementOtherConfig.vue'
+// import ElementTask from './task/ElementTask.vue'
+// import ElementMultiInstance from './multi-instance/ElementMultiInstance.vue'
+// import FlowCondition from './flow-condition/FlowCondition.vue'
+// import SignalAndMassage from './signal-message/SignalAndMessage.vue'
+// import ElementListeners from './listeners/ElementListeners.vue'
+// import ElementProperties from './properties/ElementProperties.vue'
+// import UserTaskListeners from './listeners/UserTaskListeners.vue'
 import { useBpmStore } from '@/store/modules/bpm'
 import BpmnModeler from 'bpmn-js/lib/Modeler'
 import type { Element } from 'bpmn-js/lib/model/Types'
+import { ElIcon } from 'element-plus';
 defineOptions({ name: 'MyPropertiesPanel' })
 
 /**
@@ -99,10 +96,10 @@ const props = defineProps({
 const activeTab = ref('base')
 const elementId = ref('')
 const elementType = ref('')
-const elementBusinessObject = ref<any>({}) // 元素 businessObject 镜像，提供给需要做判断的组件使用
+
 const conditionFormVisible = ref(false) // 流转条件设置
 const formVisible = ref(false) // 表单配置
-const bpmnElement = ref()
+
 const bpmStore=useBpmStore()
 provide('prefix', props.prefix)
 provide('width', props.width)
@@ -110,26 +107,24 @@ const bpmnInstances = () => (window as any)?.bpmnInstances
 
 // 监听 props.bpmnModeler 然后 initModels
 const unwatchBpmn = watch(
-  () => props.bpmnModeler,
+  () => bpmStore.bpmnModeler,
   () => {
     // 避免加载时 流程图 并未加载完成
-    if (!props.bpmnModeler) {
+    if (!bpmStore.bpmnModeler) {
       console.log('缺少props.bpmnModeler')
       return
     }
 
-    console.log('props.bpmnModeler 有值了！！！')
-    const w = window as any
-    w.bpmnInstances = {
-      modeler: props.bpmnModeler,
-      modeling: props.bpmnModeler.get('modeling'),
-      moddle: props.bpmnModeler.get('moddle'),
-      eventBus: props.bpmnModeler.get('eventBus'),
-      bpmnFactory: props.bpmnModeler.get('bpmnFactory'),
-      elementFactory: props.bpmnModeler.get('elementFactory'),
-      elementRegistry: props.bpmnModeler.get('elementRegistry'),
-      replace: props.bpmnModeler.get('replace'),
-      selection: props.bpmnModeler.get('selection')
+    bpmStore.bpmnInstances = {
+      modeler: bpmStore.bpmnModeler,
+      modeling: bpmStore.bpmnModeler.get('modeling'),
+      moddle: bpmStore.bpmnModeler.get('moddle'),
+      eventBus: bpmStore.bpmnModeler.get('eventBus'),
+      bpmnFactory: bpmStore.bpmnModeler.get('bpmnFactory'),
+      elementFactory: bpmStore.bpmnModeler.get('elementFactory'),
+      elementRegistry: bpmStore.bpmnModeler.get('elementRegistry'),
+      replace: bpmStore.bpmnModeler.get('replace'),
+      selection: bpmStore.bpmnModeler.get('selection')
     }
 
 
@@ -143,63 +138,51 @@ const unwatchBpmn = watch(
 
 const getActiveElement = () => {
   // 初始第一个选中元素 bpmn:Process
-  initFormOnChanged(null)
-  props.bpmnModeler.on('import.done', (e) => {
-    console.log(e, 'eeeee')
-    initFormOnChanged(null)
+
+  bpmStore.bpmnModeler?.on('import.done', (e) => {
+    init(null)
   })
   // 监听选择事件，修改当前激活的元素以及表单
-  props.bpmnModeler.on('selection.changed', ({ newSelection }) => {
-    initFormOnChanged(newSelection[0] || null)
+  bpmStore.bpmnModeler?.on('selection.changed', ({ newSelection }) => {
+    init(newSelection[0] || null)
   })
-  props.bpmnModeler.on('element.changed', ({ element }) => {
+  bpmStore.bpmnModeler?.on('element.changed', ({ element }) => {
     // 保证 修改 "默认流转路径" 类似需要修改多个元素的事件发生的时候，更新表单的元素与原选中元素不一致。
     if (element && element.id === elementId.value) {
-      initFormOnChanged(element)
+      init(element)
     }
   })
 }
 // 初始化数据
-const initFormOnChanged = (element:Element) => {
+const init = (element:Element|null) => {
   let activatedElement = element
   if (!activatedElement) {
-    activatedElement =
-      bpmnInstances().elementRegistry.find((el) => el.type === 'bpmn:Process') ??
-      bpmnInstances().elementRegistry.find((el) => el.type === 'bpmn:Collaboration')
+    bpmStore.bpmnElement =
+      bpmStore.bpmnInstances?.elementRegistry.find((el) => el.type === 'bpmn:Process') ??
+      bpmStore.bpmnInstances?.elementRegistry.find((el) => el.type === 'bpmn:Collaboration')
+      return
   }
-  if (!activatedElement) return
-  console.log(`
-              ----------
-      select element changed:
-                id:  ${activatedElement.id}
-              type:  ${activatedElement.businessObject.$type}
-              ----------
-              `)
-  console.log('businessObject: ', activatedElement.businessObject)
-  bpmnInstances().bpmnElement = activatedElement
-  bpmnElement.value = activatedElement
+
+
+  bpmStore.bpmnElement=activatedElement
   elementId.value = activatedElement.id
   elementType.value = activatedElement.type.split(':')[1] || ''
-  elementBusinessObject.value = structuredClone(activatedElement.businessObject)
-  conditionFormVisible.value = !!(
-    elementType.value === 'SequenceFlow' &&
-    activatedElement.source &&
-    activatedElement.source.type.indexOf('StartEvent') === -1
-  )
-  formVisible.value = elementType.value === 'UserTask' || elementType.value === 'StartEvent'
+  // conditionFormVisible.value = !!(
+  //   elementType.value === 'SequenceFlow' &&
+  //   activatedElement.source &&
+  //   activatedElement.source.type.indexOf('StartEvent') === -1
+  // )
+  // formVisible.value = elementType.value === 'UserTask' || elementType.value === 'StartEvent'
 }
 
 onBeforeUnmount(() => {
-  const w = window as any
-  w.bpmnInstances = null
-  console.log(props, 'props1')
-  console.log(props.bpmnModeler, 'props.bpmnModeler1')
+  bpmStore.bpmnInstances = undefined
 })
 
-watch(
-  () => elementId.value,
-  () => {
-    activeTab.value = 'base'
-  }
-)
+// watch(
+//   () => elementId.value,
+//   () => {
+//     activeTab.value = 'base'
+//   }
+// )
 </script>

@@ -1,16 +1,14 @@
 <template>
   <el-card>
     <!-- 流程设计器，负责绘制流程等 -->
-    <MyProcessDesigner key="designer"
-      v-bind="controlForm" keyboard ref="processDesigner" @init-finished="initModeler"
+    <MyProcessDesigner key="designer" v-bind="controlForm" keyboard ref="processDesigner" 
       :additionalModel="controlForm.additionalModel" @save="save" />
     <!-- 流程属性器，负责编辑每个流程节点的属性 -->
-    <MyProcessPenal key="penal" :bpmnModeler="modeler" :prefix="controlForm.prefix" class="process-panel"/>
+    <MyProcessPenal key="penal" :prefix="controlForm.prefix" class="process-panel" />
 
   </el-card>
 </template>
 <script lang="ts" setup>
-
 import { MyProcessDesigner, MyProcessPenal } from '@/components/bpmnProcessDesigner/package'
 // 自定义元素选中时的弹出菜单（修改 默认任务 为 用户任务）
 import CustomContentPadProvider from '@/components/bpmnProcessDesigner/package/designer/plugins/content-pad'
@@ -19,14 +17,12 @@ import CustomPaletteProvider from '@/components/bpmnProcessDesigner/package/desi
 import * as ModelApi from '@/api/bpm/model'
 import modal from '@/plugins/modal'
 import { useBpmStore } from '@/store/modules/bpm'
-import type { BpmModel } from '@/types/bpm'
 defineOptions({ name: 'BpmModelEditor' })
 
 const router = useRouter() // 路由
 const { query } = useRoute() // 路由的查询
 
-const xmlString = ref(undefined) // BPMN XML
-const modeler = ref() // BPMN Modeler
+
 const controlForm = ref({
   simulation: true,
   labelEditing: false,
@@ -35,12 +31,7 @@ const controlForm = ref({
   headerButtonSize: 'mini',
   additionalModel: [CustomContentPadProvider, CustomPaletteProvider]
 })
-const bpmStore=useBpmStore()
-
-/** 初始化 modeler */
-const initModeler = (item) => {
-  modeler.value = item
-}
+const bpmStore = useBpmStore()
 
 /** 添加/修改模型 */
 const save = async () => {
@@ -83,7 +74,7 @@ onMounted(async () => {
   </definitions>`
   }
 
-  bpmStore.currentModel =data
+  bpmStore.updateCurrentModel(data)
 
 })
 </script>

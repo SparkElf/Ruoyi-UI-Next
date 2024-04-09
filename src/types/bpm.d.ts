@@ -15,3 +15,15 @@ export type BpmModel={
     createTime?: string
     bpmnXml?: string
 }
+export type BpmnInstances={
+        modeler: BpmnModeler,
+        modeling: any,
+        moddle: any,
+        eventBus: any,
+        bpmnFactory: any,
+        elementFactory: any,
+        elementRegistry: any,
+        replace: any,
+        selection:any
+
+}

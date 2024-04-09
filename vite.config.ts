@@ -87,6 +87,9 @@ export default defineConfig(({ mode, command }) => {
           rewrite: (p) => p.replace(/^\/dev-api/, '')
         }
       }
+    },
+    build:{
+      sourcemap:true
     }
   }
 })

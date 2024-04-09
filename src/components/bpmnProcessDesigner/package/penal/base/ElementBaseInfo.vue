@@ -1,7 +1,7 @@
 <template>
   <div class="panel-tab__content">
     <el-form label-width="90px" :model="bpmStore.currentModel" :rules="rules">
-      <div v-if="currentElementBaseInfo.$type == 'bpmn:Process'">
+      <div v-if="bpmStore.bpmnElement?.type == 'bpmn:Process'">
         <!-- 如果是 Process 信息的时候，使用自定义表单 -->
 
         <el-form-item label="流程标识" prop="key">
@@ -38,15 +38,8 @@ import { ElMessage } from 'element-plus';
 
 defineOptions({ name: 'ElementBaseInfo' })
 
-const props = defineProps({
-  businessObject: {
-    type: Object,
-    default: () => {}
-  }
-})
 const bpmStore=useBpmStore()
-const needProps = ref<any>({})
-const bpmnElement = ref()
+
 const currentElementBaseInfo = ref<any>({})
 // 流程表单的下拉框的数据
 // const forms = ref([])
@@ -56,12 +49,6 @@ const rules = reactive({
   name: [{ required: true, message: '流程名称不能为空', trigger: 'blur' }]
 })
 
-const bpmnInstances = () => (window as any)?.bpmnInstances
-const resetBaseInfo = () => {
-  bpmnElement.value = bpmnInstances()?.bpmnElement
-  currentElementBaseInfo.value = bpmnElement.value.businessObject
-  console.log(currentElementBaseInfo.value)
-}
 const handleKeyUpdate = (value?:string) => {
   // 校验 value 的值，只有 XML NCName 通过的情况下，才进行赋值。否则，会导致流程图报错，无法绘制的问题
   if (!value) {
@@ -74,14 +61,14 @@ const handleKeyUpdate = (value?:string) => {
 
 
   // 在 BPMN 的 XML 中，流程标识 key，其实对应的是 id 节点
-  currentElementBaseInfo.value.id = value
+  bpmStore.updateElementBaseInfo({id:value})
   updateBaseInfo('id')
 }
 const handleNameUpdate = (value?:string) => {
   if (!value) {
     return
   }
-  currentElementBaseInfo.value.name = value
+  bpmStore.updateElementBaseInfo({name:value})
 
   updateBaseInfo('name')
 
@@ -91,52 +78,36 @@ const handleNameUpdate = (value?:string) => {
 // this.currentElementBaseInfo['documentation'] = value;
 // this.updateBaseInfo('documentation');
 // }
-const updateBaseInfo = (key) => {
-
+const updateBaseInfo = (key:string) => {
   // 触发 currentElementBaseInfo 对应的字段
-
-
+  const instances=bpmStore.bpmnInstances
   if (key === 'id') {
-
-    bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {
-      id: currentElementBaseInfo.value.id,
-      di: { id: `${currentElementBaseInfo.value.id}_di` }
+    instances?.modeling.updateProperties(toRaw(bpmStore.bpmnElement), {
+      id: bpmStore.currentModel.key,
+      di: { id: `${bpmStore.currentModel.key}_di` }
     })
   } else {
 
-    bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {[key]:currentElementBaseInfo.value[key]})//同步到流程图节点上
+    instances?.modeling.updateProperties(toRaw(bpmStore.bpmnElement), {[key]:currentElementBaseInfo.value[key]})//同步到流程图节点上
   }
 }
 
 onMounted(() => {
   // 针对上传的 bpmn 流程图时，需要延迟 1 毫秒的时间，保证 key 和 name 的更新
-  setTimeout(() => {
-    handleKeyUpdate(bpmStore.currentModel.key)
-    handleNameUpdate(bpmStore.currentModel.name)
-  }, 110)
+    // resetBaseInfo()
+    // handleKeyUpdate(bpmStore.currentModel.key)
+    // handleNameUpdate(bpmStore.currentModel.name)
 })
 
 watch(
-  () => props.businessObject,
-  (val) => {
-    if (val) {
-      resetBaseInfo()
-    }
-  }
-)
-
-watch(
-  () => bpmStore.currentModel.key,
+  () => bpmStore.bpmnElement,
   (val) => {
     // 针对上传的 bpmn 流程图时，保证 key 和 name 的更新
-    if (val) {
+    if (val&&val.type == 'bpmn:Process') {
       handleKeyUpdate(bpmStore.currentModel.key)
       handleNameUpdate(bpmStore.currentModel.name)
     }
   }
 )
 
-onBeforeUnmount(() => {
-  bpmnElement.value = null
-})
 </script>

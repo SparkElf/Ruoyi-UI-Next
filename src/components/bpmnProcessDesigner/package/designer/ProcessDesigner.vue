@@ -317,7 +317,7 @@ const props = defineProps({
 })
 
 provide('configGlobal', props)
-let bpmnModeler: BpmnModeler|null = null
+
 const defaultZoom = ref(1)
 const previewModelVisible = ref(false)
 const simulationStatus = ref(false)
@@ -403,14 +403,14 @@ const moddleExtensions = computed(() => {
 ////console.log(additionalModules, 'additionalModules()')
 ////console.log(moddleExtensions, 'moddleExtensions()')
 const initBpmnModeler = () => {
-  if (bpmnModeler) return
+  if (bpmStore.bpmnModeler) return
   let data = document.getElementById('bpmnCanvas') as HTMLElement
   ////console.log(data, 'data')
   ////console.log(props.keyboard, 'props.keyboard')
   ////console.log(additionalModules, 'additionalModules()')
   ////console.log(moddleExtensions, 'moddleExtensions()')
 
-  bpmnModeler = new BpmnModeler({
+  bpmStore.bpmnModeler = new BpmnModeler({
     // container: this.$refs['bpmn-canvas'],
     // container: getCurrentInstance(),
     // container: needClass,
@@ -435,15 +435,15 @@ const initBpmnModeler = () => {
     // moddleExtensions: { camunda: moddleExtensions.value }
   });
 
-  // bpmnModeler.createDiagram()
+  // bpmStore.bpmnModeler.createDiagram()
 
-  // //console.log(bpmnModeler, 'bpmnModeler111111')
-  emit('init-finished', bpmnModeler)
+  // //console.log(bpmStore.bpmnModeler, 'bpmStore.bpmnModeler111111')
+  emit('init-finished', bpmStore.bpmnModeler)
   initModelListeners()
 }
 
 const initModelListeners = () => {
-  const EventBus = bpmnModeler.get('eventBus')
+  const EventBus = bpmStore.bpmnModeler!.get('eventBus')
   //console.log(EventBus, 'EventBus')
   // 注册需要的监听事件, 将. 替换为 - , 避免解析异常
   props.events.forEach((event: any) => {
@@ -460,9 +460,9 @@ const initModelListeners = () => {
   // 监听图形改变返回xml
   EventBus.on('commandStack.changed', async (event) => {
     try {
-      recoverable.value = bpmnModeler?.get('commandStack').canRedo()
-      revocable.value = bpmnModeler?.get('commandStack').canUndo()
-      let { xml } = await bpmnModeler?.saveXML({ format: true })
+      recoverable.value = bpmStore.bpmnModeler?.get<any>('commandStack').canRedo()
+      revocable.value = bpmStore.bpmnModeler?.get<any>('commandStack').canUndo()
+      let { xml } = await bpmStore.bpmnModeler?.saveXML({ format: true })!
       emit('commandStack-changed', event)
       emit('input', xml)
       emit('change', xml)
@@ -471,7 +471,7 @@ const initModelListeners = () => {
     }
   })
   // 监听视图缩放变化
-  bpmnModeler.on('canvas.viewbox.changed', ({ viewbox }) => {
+  bpmStore.bpmnModeler?.on('canvas.viewbox.changed', ({ viewbox }) => {
     emit('canvas-viewbox-changed', { viewbox })
     const { scale } = viewbox
     defaultZoom.value = Math.floor(scale * 100) / 100
@@ -487,8 +487,8 @@ const createNewDiagram = async (xml?:string) => {
   let xmlString = xml || DefaultEmptyXML(newId, newName, props.prefix)
   try {
     // //console.log(xmlString, 'xmlString')
-    // //console.log(this.bpmnModeler.importXML);
-    let { warnings } = await bpmnModeler.importXML(xmlString)
+    // //console.log(this.bpmStore.bpmnModeler.importXML);
+    let { warnings } = await bpmStore.bpmnModeler?.importXML(xmlString)!
     //console.log(warnings, 'warnings')
     if (warnings && warnings.length) {
       warnings.forEach((warn) => console.warn(warn))
@@ -503,7 +503,7 @@ const downloadProcess = async (type) => {
   try {
     // 按需要类型创建文件并下载
     if (type === 'xml' || type === 'bpmn') {
-      const { err, xml } = await bpmnModeler.saveXML()
+      const { err, xml } = await bpmStore.bpmnModeler.saveXML()
       // 读取异常时抛出异常
       if (err) {
         console.error(`[Process Designer Warn ]: ${err.message || err}`)
@@ -511,7 +511,7 @@ const downloadProcess = async (type) => {
       let { href, filename } = setEncoded(type.toUpperCase(), xml)
       downloadFunc(href, filename)
     } else {
-      const { err, svg } = await bpmnModeler.saveSVG()
+      const { err, svg } = await bpmStore.bpmnModeler.saveSVG()
       // 读取异常时抛出异常
       if (err) {
         return console.error(err)
@@ -569,14 +569,14 @@ const downloadProcessAsSvg = () => {
 }
 const processSimulation = () => {
   simulationStatus.value = !simulationStatus.value
-  //console.log(bpmnModeler.get('toggleMode', 'strict'), "bpmnModeler.get('toggleMode')")
-  props.simulation && bpmnModeler.get('toggleMode', 'strict').toggleMode()
+  //console.log(bpmStore.bpmnModeler.get('toggleMode', 'strict'), "bpmStore.bpmnModeler.get('toggleMode')")
+  props.simulation && bpmStore.bpmnModeler.get('toggleMode', 'strict').toggleMode()
 }
 const processRedo = () => {
-  bpmnModeler.get('commandStack').redo()
+  bpmStore.bpmnModeler.get('commandStack').redo()
 }
 const processUndo = () => {
-  bpmnModeler.get('commandStack').undo()
+  bpmStore.bpmnModeler.get('commandStack').undo()
 }
 const processZoomIn = (zoomStep = 0.1) => {
   let newZoom = Math.floor(defaultZoom.value * 100 + zoomStep * 100) / 100
@@ -584,7 +584,7 @@ const processZoomIn = (zoomStep = 0.1) => {
     throw new Error('[Process Designer Warn ]: The zoom ratio cannot be greater than 4')
   }
   defaultZoom.value = newZoom
-  bpmnModeler.get('canvas').zoom(defaultZoom.value)
+  bpmStore.bpmnModeler.get('canvas').zoom(defaultZoom.value)
 }
 const processZoomOut = (zoomStep = 0.1) => {
   let newZoom = Math.floor(defaultZoom.value * 100 - zoomStep * 100) / 100
@@ -592,12 +592,12 @@ const processZoomOut = (zoomStep = 0.1) => {
     throw new Error('[Process Designer Warn ]: The zoom ratio cannot be less than 0.2')
   }
   defaultZoom.value = newZoom
-  bpmnModeler.get('canvas').zoom(defaultZoom.value)
+  bpmStore.bpmnModeler.get('canvas').zoom(defaultZoom.value)
 }
 
 const processReZoom = () => {
   defaultZoom.value = 1
-  bpmnModeler.get('canvas').zoom('fit-viewport', 'auto')
+  bpmStore.bpmnModeler.get('canvas').zoom('fit-viewport', 'auto')
 }
 const processRestart = () => {
   recoverable.value = false
@@ -605,8 +605,8 @@ const processRestart = () => {
   createNewDiagram(null)
 }
 const elementsAlign = (align) => {
-  const Align = bpmnModeler.get('alignElements')
-  const Selection = bpmnModeler.get('selection')
+  const Align = bpmStore.bpmnModeler.get('alignElements')
+  const Selection = bpmStore.bpmnModeler.get('selection')
   const SelectedElements = Selection.get()
   if (!SelectedElements || SelectedElements.length <= 1) {
     ElMessage.warning('请按住 Shift 键选择多个元素对齐')
@@ -623,8 +623,8 @@ const elementsAlign = (align) => {
 }
 /*-----------------------------    方法结束     ---------------------------------*/
 const previewProcessXML = () => {
-  //console.log(bpmnModeler.saveXML, 'bpmnModeler')
-  bpmnModeler.saveXML({ format: true }).then(({ xml }) => {
+  //console.log(bpmStore.bpmnModeler.saveXML, 'bpmStore.bpmnModeler')
+  bpmStore.bpmnModeler.saveXML({ format: true }).then(({ xml }) => {
     // //console.log(xml, 'xml111111')
     previewResult.value = xml
     previewType.value = 'xml'
@@ -632,7 +632,7 @@ const previewProcessXML = () => {
   })
 }
 const previewProcessJson = () => {
-  bpmnModeler.saveXML({ format: true }).then(({ xml }) => {
+  bpmStore.bpmnModeler.saveXML({ format: true }).then(({ xml }) => {
     // //console.log(xml, 'xml')
 
     // const rootNode = parseXmlString(xml)
@@ -659,8 +659,7 @@ const previewProcessJson = () => {
 }
 /* ------------------------------------------------ 芋道源码 methods ------------------------------------------------------ */
 const processSave = async () => {
-  const { error, xml } = await bpmnModeler!.saveXML()
-  debugger
+  const { error, xml } = await bpmStore.bpmnModeler!.saveXML()
   bpmStore.currentModel.bpmnXml=xml
   if (error) {
     ElMessage.error('保存模型失败，请重试！')
@@ -682,10 +681,9 @@ onMounted(() => {
   initBpmnModeler()
 })
 onBeforeUnmount(() => {
-  // this.$once('hook:beforeDestroy', () => {
-  // })
-  if (bpmnModeler) bpmnModeler.destroy()
-  emit('destroy', bpmnModeler)
-  bpmnModeler = null
+
+  if (bpmStore.bpmnModeler) bpmStore.bpmnModeler.destroy()
+  emit('destroy', bpmStore.bpmnModeler)
+  bpmStore.bpmnModeler = undefined
 })
 </script>
