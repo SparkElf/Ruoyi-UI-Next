@@ -30,7 +30,7 @@
         <el-form-item label="流程名称" prop="name">
           <el-input
             v-model="formData.name"
-            :disabled="!!formData.id"
+     
             clearable
             placeholder="请输入流程名称"
           />
