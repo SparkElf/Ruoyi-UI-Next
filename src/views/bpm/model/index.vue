@@ -245,7 +245,7 @@ const handleChangeState = async (row) => {
 /** 设计流程 */
 const handleDesign = (row:any) => {
     push({
-        path: '/bpm/modelEditor',
+        path: '/bpm/manager/model/modelEditor',
         query: {
             modelId: row.id
         }

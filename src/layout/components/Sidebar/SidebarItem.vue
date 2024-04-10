@@ -1,6 +1,6 @@
 <template>
   <div v-if="!item.hidden">
-    <el-sub-menu v-if="item.children"  ref="subMenu" :index="resolvePath()" teleported >
+    <el-sub-menu v-if="hasShowChildren()"  ref="subMenu" :index="resolvePath()" teleported >
       <template v-if="item.meta" #title>
         <svg-icon :icon-class="item.meta && item.meta.icon" />
         <span class="menu-title" @click.stop="handleSubMenuClick">{{ item.meta.title }}</span>
@@ -61,6 +61,10 @@ function handleSubMenuClick(){
     if(props.item.redirect)router.push(props.item.redirect)
     else if(props.item.path)router.push(props.item.path)
   }
+}
+
+function hasShowChildren(){
+  return props.item.children&&props.item.children.length&&props.item.children.some(child=>!child.hidden)
 }
 
 </script>: {}: string: string: string | any[]: {}: string: string: string | any[]

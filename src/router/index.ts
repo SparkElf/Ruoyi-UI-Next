@@ -80,12 +80,12 @@ export const constantRoutes = [
     name: 'Profile',
     meta: { title: '个人中心', icon: 'user' }
   },
-  {
-    path: '/bpm/modelEditor',
-    component: () => import('@/views/bpm/model/BpmModelEditor.vue'),
-    hidden: true,
-    name: 'BpmModelEditor',
-  }
+  // {
+  //   path: '/bpm/modelEditor',
+  //   component: () => import('@/views/bpm/model/BpmModelEditor.vue'),
+  //   hidden: true,
+  //   name: 'BpmModelEditor',
+  // }
 ] as Route[]
 
 // 动态路由，基于用户权限动态去加载
