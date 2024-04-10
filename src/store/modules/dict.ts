@@ -24,11 +24,11 @@ const useDictStore = defineStore(
         }
       },
       // 设置字典
-      setDict(_key: string, value: DictItem[]) {
-        if (_key !== null && _key !== "") {
+      setDict(key: string, value: DictItem[]) {
+        if (key !== null && key !== "") {
           this.dict.push({
-            key: _key,
-            value: value
+            key,
+            value
           });
         }
       },

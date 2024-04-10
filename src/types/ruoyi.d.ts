@@ -1,5 +1,6 @@
 import type { RouteLocationMatched, RouteRecordRaw, RouteLocationNormalizedLoaded } from "vue-router"
-
+import { DICT_TYPE } from "@/enums/dict"
+export type Dict<T extends keyof typeof DICT_TYPE> ={[K in T]:DictItem[]}
 export type DictItem = {
     value: string
     label: string
