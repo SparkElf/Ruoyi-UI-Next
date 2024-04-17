@@ -277,7 +277,7 @@ const handleDeploy = async (row) => {
 /** 跳转到指定流程定义列表 */
 const handleDefinitionList = (row) => {
     push({
-        name: 'BpmProcessDefinition',
+        path: '/bpm/manager/model/definition',
         query: {
             key: row.key
         }
