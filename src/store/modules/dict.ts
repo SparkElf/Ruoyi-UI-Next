@@ -1,7 +1,7 @@
 import type { DictItem } from "@/types/ruoyi";
 
 //TODO 这样设置字典岂不是有重复?
-const useDictStore = defineStore(
+export const useDictStore = defineStore(
   'dict',
   {
     state: () => ({

@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const useAppStore = defineStore(
+export const useAppStore = defineStore(
   'app',
   {
     state: () => ({

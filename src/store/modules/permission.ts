@@ -9,7 +9,7 @@ import type { Route } from '@/types/ruoyi'
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue')
 
-const usePermissionStore = defineStore(
+export const usePermissionStore = defineStore(
   'permission',
   {
     state: () => ({

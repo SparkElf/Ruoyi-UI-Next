@@ -1,7 +1,7 @@
 import type { Route } from "@/types/ruoyi"
 
 
-const useTagsViewStore = defineStore(
+export const useTagsViewStore = defineStore(
   'tags-view',
   {
     state: () => ({

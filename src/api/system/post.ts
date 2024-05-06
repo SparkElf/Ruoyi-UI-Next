@@ -1,5 +1,13 @@
 import request from '@/utils/request'
-
+export interface PostVO {
+  id?: number
+  name: string
+  code: string
+  sort: number
+  status: number
+  remark: string
+  createTime?: Date
+}
 // 查询岗位列表
 export function listPost(query) {
   return request({

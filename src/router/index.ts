@@ -79,8 +79,19 @@ export const constantRoutes = [
     hidden: true,
     name: 'Profile',
     meta: { title: '个人中心', icon: 'user' }
-  }
-] as Route[]
+  },
+  {
+    path: '/bpm/manager/form/edit',
+    component: () => import('@/views/bpm/form/editor/index.vue'),
+    hidden: true,
+    name: 'BpmFormEditor',
+    meta: {
+      noCache: true,
+      title: '设计流程表单',
+      activeMenu: '/bpm/manager/form'
+    }
+  },
+] as unknown as Route[]
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
@@ -125,7 +136,7 @@ export const dynamicRoutes = [
     hidden: true,
     permissions: ['tool:gen:edit'],
   }
-] as Route[]
+] as unknown as Route[]
 
 const router = createRouter({
   history: createWebHistory(),

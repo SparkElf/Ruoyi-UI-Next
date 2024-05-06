@@ -8,7 +8,7 @@ import locale from 'element-plus/es/locale/lang/zh-cn'
 
 import '@/assets/styles/index.scss' // global css
 
-import App from './App'
+import App from './App.vue'
 import store from './store'
 import router from './router'
 import directive from './directive' // directive
@@ -44,6 +44,7 @@ import TreeSelect from '@/components/TreeSelect/index.vue'
 // 字典标签组件
 import DictTag from '@/components/DictTag/index.vue'
 
+
 const app = createApp(App)
 
 // 全局方法挂载
@@ -66,6 +67,7 @@ app.component('ImagePreview', ImagePreview)
 app.component('RightToolbar', RightToolbar)
 app.component('Editor', Editor)
 
+
 app.use(router)
 app.use(store)
 app.use(plugins)
@@ -78,7 +80,7 @@ directive(app)
 app.use(ElementPlus, {
   locale: locale,
   // 支持 large、default、small
-  size: Cookies.get('size') || 'default'
+  size: Cookies.get('size') as 'large'|'default'|'small' || 'default'
 })
 
 app.mount('#app')

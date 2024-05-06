@@ -1,9 +1,12 @@
 import { ElMessage, ElMessageBox, ElNotification, ElLoading, type LoadingParentElement, ElLoadingService, type MessageParamsWithType } from 'element-plus'
-import type { ComponentOptionsBase } from 'vue';
 
-let loadingInstance:ReturnType<typeof ElLoadingService>
+let loadingInstance: ReturnType<typeof ElLoadingService>
 
 export default {
+  info: ElMessage.info,
+  error: ElMessage.error,
+  success: ElMessage.success,
+  warning: ElMessage.warning,
   // 消息提示
   msg(content: string) {
     ElMessage.info(content)
@@ -25,35 +28,35 @@ export default {
     ElMessageBox.alert(content, "系统提示")
   },
   // 错误提示
-  alertError(content:string) {
+  alertError(content: string) {
     ElMessageBox.alert(content, "系统提示", { type: 'error' })
   },
   // 成功提示
-  alertSuccess(content:string) {
+  alertSuccess(content: string) {
     ElMessageBox.alert(content, "系统提示", { type: 'success' })
   },
   // 警告提示
-  alertWarning(content:string) {
+  alertWarning(content: string) {
     ElMessageBox.alert(content, "系统提示", { type: 'warning' })
   },
   // 通知提示
-  notify(content:string) {
+  notify(content: string) {
     ElNotification.info(content)
   },
   // 错误通知
-  notifyError(content:string) {
+  notifyError(content: string) {
     ElNotification.error(content);
   },
   // 成功通知
-  notifySuccess(content:string) {
+  notifySuccess(content: string) {
     ElNotification.success(content)
   },
   // 警告通知
-  notifyWarning(content:string) {
+  notifyWarning(content: string) {
     ElNotification.warning(content)
   },
   // 确认窗体
-  confirm(content:string) {
+  confirm(content: string) {
     return ElMessageBox.confirm(content, "系统提示", {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -61,7 +64,7 @@ export default {
     })
   },
   // 提交内容
-  prompt(content:string) {
+  prompt(content: string) {
     return ElMessageBox.prompt(content, "系统提示", {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -69,7 +72,7 @@ export default {
     })
   },
   // 打开遮罩层
-  loading(content:string) {
+  loading(content: string) {
     loadingInstance = ElLoading.service({
       lock: true,
       text: content,
@@ -79,5 +82,17 @@ export default {
   // 关闭遮罩层
   closeLoading() {
     loadingInstance.close();
-  }
+  },
+  // 删除窗体
+  delConfirm(content?: string, tip?: string) {
+    return ElMessageBox.confirm(
+      '确认删除？',
+      '系统提示',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+  },
 }

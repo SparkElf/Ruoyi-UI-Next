@@ -9,6 +9,8 @@ import AutoImport from 'unplugin-auto-import/vite'
 import VueDevTools from 'vite-plugin-vue-devtools'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
@@ -30,6 +32,13 @@ export default defineConfig(({ mode, command }) => {
         ],
         dts: true
       }),
+      Components({
+        // 生成自定义 `auto-components.d.ts` 全局声明
+        dts: 'auto-components.d.ts',
+        // 自定义组件的解析器
+        resolvers: [ElementPlusResolver()],
+        globs: ["src/components/**/**.{vue, md}", '!src/components/DiyEditor/components/mobile/**']
+      }),
       //将assets下的icon路径转换为类名直接引用
       createSvgIconsPlugin({
         iconDirs: [path.resolve(process.cwd(), 'src/assets/icons/svg')],
@@ -37,6 +46,14 @@ export default defineConfig(({ mode, command }) => {
             svgoOptions: VITE_APP_ENV === 'production'
         })
     ],],
+    css: {//scss全局变量
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@import "./src/styles/variables.scss";',
+          javascriptEnabled: true
+        }
+      }
+    },
     resolve: {
       // https://cn.vitejs.dev/config/#resolve-alias
       alias: {
@@ -53,29 +70,14 @@ export default defineConfig(({ mode, command }) => {
       port: 80,
       host: true,
       open: true,
-      proxy: {
-        // https://cn.vitejs.dev/config/#server-proxy
-        '/dev-api': {
-          target: 'http://localhost:8080',
-          changeOrigin: true,
-          rewrite: (p) => p.replace(/^\/dev-api/, '')
-        }
-      }
+      // proxy: {
+      //   // https://cn.vitejs.dev/config/#server-proxy
+      //   '/dev-api': {
+      //     target: 'http://localhost:8080',
+      //     changeOrigin: true,
+      //     rewrite: (p) => p.replace(/^\/dev-api/, '')
+      //   }
+      // }
     }
   }
 })
-
-
-
-// // https://vitejs.dev/config/
-// export default defineConfig({
-//   plugins: [
-//     vue(),
-//     VueDevTools(),
-//   ],
-//   resolve: {
-//     alias: {
-//       '@': fileURLToPath(new URL('./src', import.meta.url))
-//     }
-//   }
-// })

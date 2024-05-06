@@ -1,5 +1,15 @@
 import request from '@/utils/request'
-
+export interface RoleVO {
+  id: number
+  name: string
+  code: string
+  sort: number
+  status: number
+  type: number
+  dataScope: number
+  dataScopeDeptIds: number[]
+  createTime: Date
+}
 // 查询角色列表
 export function listRole(query) {
   return request({
