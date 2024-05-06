@@ -53,6 +53,14 @@
   position: relative;
   margin: 0 auto;
 }
+.el-dialog__header{
+  border-bottom: 1px solid var(--el-border-color) ;
+  margin-bottom: var(--el-dialog-padding-primary);
+  margin-left: calc( var(--el-dialog-padding-primary) * -1) ;
+  margin-right: calc( var(--el-dialog-padding-primary) * -1);
+  padding-left: var(--el-dialog-padding-primary);
+  padding-right: var(--el-dialog-padding-primary);
+}
 
 // refine element ui upload
 .upload-container {
@@ -93,4 +101,7 @@
 
 .el-dropdown .el-dropdown-link{
   color: var(--el-color-primary) !important;
+}
+.app-row{
+  margin: 20px;
 }

@@ -9,13 +9,13 @@
 <script lang="ts" setup>
 import BpmnViewer from 'bpmn-js/lib/Viewer'
 import DefaultEmptyXML from './plugins/defaultEmpty'
-import { DICT_TYPE } from '@/utils/constants'
-import { formatDate } from '@/utils/formatTime'
+import { DICT_TYPE } from '@/enums/dict';
+
 import { isEmpty } from '@/utils/is'
-import { useDict } from '@/hooks/ruoyi'
+import { useDict } from '@/hooks/ruoyi';
 
 defineOptions({ name: 'MyProcessViewer' })
-const {bpm_task_status}=useDict(DICT_TYPE.BPM_TASK_STATUS)
+
 const props = defineProps({
   value: {
     // BPMN XML 字符串
@@ -58,7 +58,7 @@ const bpmnCanvas = ref()
 // const element = ref()
 const elementOverlayIds = ref<any>(null)
 const overlays = ref<any>(null)
-
+const {bpm_task_status}=useDict(DICT_TYPE.bpm_task_status)
 const initBpmnModeler = () => {
   if (bpmnModeler) return
   bpmnModeler = new BpmnViewer({
@@ -103,7 +103,7 @@ const highlightDiagram = async () => {
   let findProcessTask = false //是否已经高亮了进行中的任务
   //进行中高亮之后的任务 key 集合，用于过滤掉 taskList 进行中后面的任务，避免进行中后面的数据 Hover 还有数据
   let removeTaskDefinitionKeyList = []
-  // debugger
+  //
   bpmnModeler.getDefinitions().rootElements[0].flowElements?.forEach((n: any) => {
     let activity: any = activityList.find((m: any) => m.key === n.id) // 找到对应的活动
     if (!activity) {
@@ -134,7 +134,7 @@ const highlightDiagram = async () => {
       // 处理 outgoing 出线
       const outgoing = getActivityOutgoing(activity)
       outgoing?.forEach((nn: any) => {
-        // debugger
+        //
         let targetActivity: any = activityList.find((m: any) => m.key === nn.targetRef.id)
         // 如果目标活动存在，则根据该活动是否结束，进行【bpmn:SequenceFlow】连线的高亮设置
         if (targetActivity) {
@@ -323,7 +323,7 @@ const elementHover = (element) => {
     if (element.value.type === 'bpmn:StartEvent' && processInstance.value) {
       html = `<p>发起人：${processInstance.value.startUser.nickname}</p>
                   <p>部门：${processInstance.value.startUser.deptName}</p>
-                  <p>创建时间：${formatDate(processInstance.value.createTime)}`
+                  <p>创建时间：${processInstance.value.createTime}`
     } else if (element.value.type === 'bpmn:UserTask') {
       let task = taskList.value.find((m) => m.id === activity.taskId) // 找到活动对应的 taskId
       if (!task) {
@@ -339,7 +339,7 @@ const elementHover = (element) => {
       html = `<p>审批人：${task.assigneeUser.nickname}</p>
                   <p>部门：${task.assigneeUser.deptName}</p>
                   <p>结果：${dataResult}</p>
-                  <p>创建时间：${formatDate(task.createTime)}</p>`
+                  <p>创建时间：${task.createTime}</p>`
       // html = `<p>审批人：${task.assigneeUser.nickname}</p>
       //             <p>部门：${task.assigneeUser.deptName}</p>
       //             <p>结果：${getIntDictOptions(
@@ -348,17 +348,17 @@ const elementHover = (element) => {
       //             )}</p>
       //             <p>创建时间：${formatDate(task.createTime)}</p>`
       if (task.endTime) {
-        html += `<p>结束时间：${formatDate(task.endTime)}</p>`
+        html += `<p>结束时间：${task.endTime}</p>`
       }
       if (task.reason) {
         html += `<p>审批建议：${task.reason}</p>`
       }
     } else if (element.value.type === 'bpmn:ServiceTask' && processInstance.value) {
       if (activity.startTime > 0) {
-        html = `<p>创建时间：${formatDate(activity.startTime)}</p>`
+        html = `<p>创建时间：${activity.startTime}</p>`
       }
       if (activity.endTime > 0) {
-        html += `<p>结束时间：${formatDate(activity.endTime)}</p>`
+        html += `<p>结束时间：${activity.endTime}</p>`
       }
       console.log(html)
     } else if (element.value.type === 'bpmn:EndEvent' && processInstance.value) {
@@ -375,7 +375,7 @@ const elementHover = (element) => {
       //   processInstance.value.status
       // )}</p>`
       if (processInstance.value.endTime) {
-        html += `<p>结束时间：${formatDate(processInstance.value.endTime)}</p>`
+        html += `<p>结束时间：${processInstance.value.endTime}</p>`
       }
     }
     // console.log(html, 'html111111111111111')

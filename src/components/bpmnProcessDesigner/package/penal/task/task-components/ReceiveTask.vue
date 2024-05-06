@@ -55,7 +55,7 @@ const props = defineProps({
   type: String
 })
 
-const message = useMessage()
+
 
 const bindMessageId = ref('')
 const newMessageForm = ref<any>({})

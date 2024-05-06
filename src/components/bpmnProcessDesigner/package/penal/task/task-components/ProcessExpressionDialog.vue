@@ -14,7 +14,7 @@
       <!-- 分页 -->
       <Pagination
         :total="total"
-        v-model:page="queryParams.pageNum"
+        v-model:page="queryParams.pageNo"
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
@@ -22,12 +22,11 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { CommonStatusEnum } from '@/utils/constants'
-import { ProcessExpressionApi, ProcessExpressionVO } from '@/api/bpm/processExpression'
+//import { CommonStatusEnum } from '@/utils/constants'
+//import { ProcessExpressionApi, ProcessExpressionVO } from '@/api/bpm/processExpression'
 
 /** BPM 流程 表单 */
 defineOptions({ name: 'ProcessExpressionDialog' })
-
 
 
 
@@ -36,7 +35,7 @@ const loading = ref(true) // 列表的加载中
 const list = ref<ProcessExpressionVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
 const queryParams = reactive({
-  pageNum: 1,
+  pageNo: 1,
   pageSize: 10,
   type: undefined,
   status: CommonStatusEnum.ENABLE
@@ -47,7 +46,7 @@ const open = async (type: string) => {
   dialogVisible.value = true
   loading.value = true
   try {
-    queryParams.pageNum = 1
+    queryParams.pageNo = 1
     queryParams.type = type
     const data = await ProcessExpressionApi.getProcessExpressionPage(queryParams)
     list.value = data.list

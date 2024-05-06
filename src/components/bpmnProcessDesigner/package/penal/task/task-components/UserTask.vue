@@ -8,7 +8,7 @@
         @change="changeCandidateStrategy"
       >
         <el-option
-          v-for="dict in bpm_task_candidate_strategy"
+          v-for="dict in getIntDictOptions(DICT_TYPE.BPM_TASK_CANDIDATE_STRATEGY)"
           :key="dict.value"
           :label="dict.label"
           :value="dict.value"
@@ -127,23 +127,20 @@
 </template>
 
 <script lang="ts" setup>
-
-import { defaultProps, handleTree } from '@/utils/tree'
+//import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+//import { defaultProps, handleTree } from '@/utils/tree'
 import * as RoleApi from '@/api/system/role'
 import * as DeptApi from '@/api/system/dept'
 import * as PostApi from '@/api/system/post'
 import * as UserApi from '@/api/system/user'
-import * as UserGroupApi from '@/api/bpm/userGroup'
+//import * as UserGroupApi from '@/api/bpm/userGroup'
 import ProcessExpressionDialog from './ProcessExpressionDialog.vue'
-import { DICT_TYPE } from '@/utils/constants'
-import { useDict } from '@/hooks/ruoyi'
 
 defineOptions({ name: 'UserTask' })
 const props = defineProps({
   id: String,
   type: String
 })
-const {bpm_task_candidate_strategy}=useDict(DICT_TYPE.BPM_TASK_CANDIDATE_STRATEGY)
 const userTaskForm = ref({
   candidateStrategy: undefined, // 分配规则
   candidateParam: [] // 分配选项
@@ -224,7 +221,7 @@ onMounted(async () => {
   // 获得岗位列表
   postOptions.value = await PostApi.getSimplePostList()
   // 获得用户列表
-  userOptions.value = await UserApi.listUser()
+  userOptions.value = await UserApi.getSimpleUserList()
   // 获得用户组列表
   userGroupOptions.value = await UserGroupApi.getUserGroupSimpleList()
 })

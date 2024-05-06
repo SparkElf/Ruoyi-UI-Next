@@ -28,7 +28,7 @@
       <!-- 分页 -->
       <Pagination
         :total="total"
-        v-model:page="queryParams.pageNum"
+        v-model:page="queryParams.pageNo"
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
@@ -36,10 +36,10 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { ProcessListenerApi, type ProcessListenerVO } from '@/api/bpm/processListener'
+//import { ProcessListenerApi, ProcessListenerVO } from '@/api/bpm/processListener'
+//import { DICT_TYPE } from '@/utils/dict'
+//import { CommonStatusEnum } from '@/utils/constants'
 
-import { CommonStatusEnum } from '@/utils/constants'
-import { DICT_TYPE } from '@/utils/constants';
 /** BPM 流程 表单 */
 defineOptions({ name: 'ProcessListenerDialog' })
 
@@ -49,8 +49,8 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const loading = ref(true) // 列表的加载中
 const list = ref<ProcessListenerVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
-const queryParams = reactive<any>({
-  pageNum: 1,
+const queryParams = reactive({
+  pageNo: 1,
   pageSize: 10,
   type: undefined,
   status: CommonStatusEnum.ENABLE
@@ -61,7 +61,7 @@ const open = async (type: string) => {
   dialogVisible.value = true
   loading.value = true
   try {
-    queryParams.pageNum = 1
+    queryParams.pageNo = 1
     queryParams.type = type
     const data = await ProcessListenerApi.getProcessListenerPage(queryParams)
     list.value = data.list
@@ -77,9 +77,6 @@ const emit = defineEmits(['success']) // 定义 success 事件，用于操作成
 const select = async (row) => {
   dialogVisible.value = false
   // 发送操作成功的事件
-  emit('success', row)
-}
-function getList(){
-
+  emit('select', row)
 }
 </script>

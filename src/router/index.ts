@@ -80,18 +80,13 @@ export const constantRoutes = [
     name: 'Profile',
     meta: { title: '个人中心', icon: 'user' }
   },
-  {
-    path: '/bpm/manager/form/edit',
-    component: () => import('@/views/bpm/form/editor/index.vue'),
-    hidden: true,
-    name: 'BpmFormEditor',
-    meta: {
-      noCache: true,
-      title: '设计流程表单',
-      activeMenu: '/bpm/manager/form'
-    }
-  },
-] as unknown as Route[]
+  // {
+  //   path: '/bpm/modelEditor',
+  //   component: () => import('@/views/bpm/model/BpmModelEditor.vue'),
+  //   hidden: true,
+  //   name: 'BpmModelEditor',
+  // }
+] as Route[]
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [

@@ -4,11 +4,12 @@ import { defineConfig, loadEnv } from 'vite'
 
 import vue from '@vitejs/plugin-vue'
 
-import AutoImport from 'unplugin-auto-import/vite'
-
 import VueDevTools from 'vite-plugin-vue-devtools'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from 'unplugin-icons/resolver'
+import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 // https://vitejs.dev/config/
@@ -30,15 +31,31 @@ export default defineConfig(({ mode, command }) => {
           'vue-router',
           'pinia'
         ],
-        dts: true
+        dts: true,
+        resolvers:[
+          ElementPlusResolver()
+        ]
+
       }),
       Components({
-        // 生成自定义 `auto-components.d.ts` 全局声明
-        dts: 'auto-components.d.ts',
-        // 自定义组件的解析器
-        resolvers: [ElementPlusResolver()],
-        globs: ["src/components/**/**.{vue, md}", '!src/components/DiyEditor/components/mobile/**']
+        resolvers: [
+          // Auto register icon components
+          // 自动注册图标组件
+          IconsResolver({
+            enabledCollections: ['ep'],
+          }),
+          // Auto register Element Plus components
+          // 自动导入 Element Plus 组件
+          ElementPlusResolver(),
+        ],
+
+        dts: 'components.d.ts',
       }),
+
+      Icons({
+        autoInstall: true,
+      }),
+
       //将assets下的icon路径转换为类名直接引用
       createSvgIconsPlugin({
         iconDirs: [path.resolve(process.cwd(), 'src/assets/icons/svg')],
@@ -70,14 +87,32 @@ export default defineConfig(({ mode, command }) => {
       port: 80,
       host: true,
       open: true,
-      // proxy: {
-      //   // https://cn.vitejs.dev/config/#server-proxy
-      //   '/dev-api': {
-      //     target: 'http://localhost:8080',
-      //     changeOrigin: true,
-      //     rewrite: (p) => p.replace(/^\/dev-api/, '')
-      //   }
-      // }
+      proxy: {
+        // https://cn.vitejs.dev/config/#server-proxy
+        '/dev-api': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/dev-api/, '')
+        }
+      }
+    },
+    build:{
+      sourcemap:true
     }
   }
 })
+
+
+
+// // https://vitejs.dev/config/
+// export default defineConfig({
+//   plugins: [
+//     vue(),
+//     VueDevTools(),
+//   ],
+//   resolve: {
+//     alias: {
+//       '@': fileURLToPath(new URL('./src', import.meta.url))
+//     }
+//   }
+// })

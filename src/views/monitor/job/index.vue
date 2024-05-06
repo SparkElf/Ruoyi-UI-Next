@@ -284,12 +284,13 @@
    </div>
 </template>
 
-<script setup name="Job">
+<script setup lang="ts">
 import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
-import Crontab from '@/components/Crontab'
+import {useDict} from "@/hooks/ruoyi"
+import Crontab from '@/components/Crontab/index.vue'
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-const { sys_job_group, sys_job_status } = proxy.useDict("sys_job_group", "sys_job_status");
+const { sys_job_group,sys_job_status } = useDict("sys_job_group", "sys_job_status");
 
 const jobList = ref([]);
 const open = ref(false);
@@ -332,7 +333,7 @@ function getList() {
   });
 }
 /** 任务组名字典翻译 */
-function jobGroupFormat(row, column) {
+function jobGroupFormat(row: { jobGroup: any; }, column: any) {
   return proxy.selectDictLabel(sys_job_group.value, row.jobGroup);
 }
 /** 取消按钮 */
@@ -365,13 +366,13 @@ function resetQuery() {
   handleQuery();
 }
 // 多选框选中数据
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.jobId);
+function handleSelectionChange(selection: { map: (arg0: (item: any) => any) => never[]; length: number; }) {
+  ids.value = selection.map((item: { jobId: any; }) => item.jobId);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
 // 更多操作触发
-function handleCommand(command, row) {
+function handleCommand(command: any, row: any) {
   switch (command) {
     case "handleRun":
       handleRun(row);
@@ -387,7 +388,7 @@ function handleCommand(command, row) {
   }
 }
 // 任务状态修改
-function handleStatusChange(row) {
+function handleStatusChange(row: { status: string; jobName: string; jobId: any; }) {
   let text = row.status === "0" ? "启用" : "停用";
   proxy.$modal.confirm('确认要"' + text + '""' + row.jobName + '"任务吗?').then(function () {
     return changeJobStatus(row.jobId, row.status);
@@ -398,7 +399,7 @@ function handleStatusChange(row) {
   });
 }
 /* 立即执行一次 */
-function handleRun(row) {
+function handleRun(row: { jobName: string; jobId: any; jobGroup: any; }) {
   proxy.$modal.confirm('确认要立即执行一次"' + row.jobName + '"任务吗?').then(function () {
     return runJob(row.jobId, row.jobGroup);
   }).then(() => {
@@ -406,7 +407,7 @@ function handleRun(row) {
   .catch(() => {});
 }
 /** 任务详细信息 */
-function handleView(row) {
+function handleView(row: { jobId: any; }) {
   getJob(row.jobId).then(response => {
     form.value = response.data;
     openView.value = true;
@@ -418,11 +419,11 @@ function handleShowCron() {
   openCron.value = true;
 }
 /** 确定后回传值 */
-function crontabFill(value) {
+function crontabFill(value: any) {
   form.value.cronExpression = value;
 }
 /** 任务日志列表查询 */
-function handleJobLog(row) {
+function handleJobLog(row: { jobId: number; }) {
   const jobId = row.jobId || 0;
   router.push('/monitor/job-log/index/' + jobId)
 }
@@ -433,7 +434,7 @@ function handleAdd() {
   title.value = "添加任务";
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row: { jobId: never[]; }) {
   reset();
   const jobId = row.jobId || ids.value;
   getJob(jobId).then(response => {
@@ -444,7 +445,7 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["jobRef"].validate(valid => {
+  proxy.$refs["jobRef"].validate((valid: any) => {
     if (valid) {
       if (form.value.jobId != undefined) {
         updateJob(form.value).then(response => {
@@ -463,7 +464,7 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
+function handleDelete(row: { jobId: never[]; }) {
   const jobIds = row.jobId || ids.value;
   proxy.$modal.confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项?').then(function () {
     return delJob(jobIds);

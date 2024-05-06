@@ -1,7 +1,5 @@
 import { createApp } from 'vue'
 
-import Cookies from 'js-cookie'
-
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import locale from 'element-plus/es/locale/lang/zh-cn'
@@ -69,7 +67,7 @@ app.component('Editor', Editor)
 
 
 app.use(router)
-app.use(store)
+
 app.use(plugins)
 app.use(elementIcons)
 app.component('svg-icon', SvgIcon)
